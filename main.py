@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 # Настройки дискорда Петал
-Discordtoken = "MTE4NTYxMjI3NjUyNzU0NjQ3OQ.GvLpdq.gLbVas4tIRbMrPE1PUm2ypZgbhWr8j8nqRzh9I"
+Discordtoken = $secret.DiscordToken
 intents = discord.Intents.default()  # Подключаем "Разрешения"
 intents.message_content = True
 bot = commands.Bot(command_prefix='', intents=intents)  # Задаём префикс и интенты
