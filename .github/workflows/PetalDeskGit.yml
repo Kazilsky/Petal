@@ -7,13 +7,15 @@ jobs:
   build:
     name: Building Petal...
     runs-on: PetalAI running
-    run: cmd /c ls
+    
     
     steps:
       - name: Downloading & Installing Essentials
         run: |
+          cmd /c ls
           Invoke-WebRequest -Uri "https://drive.google.com/drive/folders/1MtdWSC6WQgFgY2i0Gdg49LpHK9a9FoaF?usp=drive_link"
           pip install -r requirements
+          
 
       - name: Download Venv emulate
         run: pip install virtualenv
