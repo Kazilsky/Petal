@@ -11,8 +11,8 @@ messageint = 0
 
 
 async def answer(user, msg):
-    with open('memory.json') as f:
-        datamem = json.load(f)
+    #with open('memory.json') as f:
+        #datamem = json.load(f)
     messageint = messageint + 1
     print('-'*80)
     dialog = []
@@ -21,7 +21,7 @@ async def answer(user, msg):
     msg = msg[0].upper() + msg[1:]
     dialog.append('Собеседник: ' + msg)
     prompt = f'<SC6>Ты нейронный ассистент основанный на собственном движке, тебя зовут Петал, тебя создал Alone или Игрок, на данный момент с тобой разговаривает {user} и говорит тебе:' + '\n'.join(dialog) + '\nТы: <extra_id_0>'
-    memory = f'Твои воспоминания о прошлых диалогах: {datamem}'
+    #memory = f'Твои воспоминания о прошлых диалогах: {datamem}'
     input_ids = t5_tokenizer(prompt, return_tensors='pt').input_ids
     out_ids = t5_model.generate(input_ids=input_ids.to(device), do_sample=True, temperature=0.9, max_new_tokens=512, top_p=0.85,
                                       top_k=2, repetition_penalty=1.2)
@@ -31,12 +31,12 @@ async def answer(user, msg):
 
     t5_output = t5_output.replace('<extra_id_0>', '').strip()
     t5_output = t5_output.split('Собеседник')[0].strip()
-    with open('memory.json') as f:
+    '''with open('memory.json') as f:
         datamem = json.load(f)
     datamem['Log'+messageint] = f'{user}: {msg} Твой ответ: {t5_output}'
     with open('myfile.json', 'w') as f:
         json.dump(datamem, f, ensure_ascii=False, indent=4)
-    return t5_output
+    return t5_output'''
 
 '''while True:
     print('-'*80)
