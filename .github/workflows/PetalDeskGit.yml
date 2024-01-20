@@ -6,16 +6,14 @@ on:
 jobs:
   build:
     name: Building Petal...
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     
     steps:
+      - uses: actions/checkout@v3
       - name: Downloading & Installing Essentials
-        run: |
-          curl -o requirements.txt https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
-          curl -o dataset.json https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
-          curl -o neiro.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
-          curl -o main.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
+        run: pip install -r $GITHUB_WORKSPACE/requirements.txt
+        
       - name: Download Venv emulate
         run: |
           pip install virtualenv
@@ -24,5 +22,4 @@ jobs:
         run: |
           cmd source venv/Scripts/activate
           more requirements.txt
-          pip install -r /requirements.txt
-          python /main.py 
+          python $GITHUB_WORKSPACE/main.py 
