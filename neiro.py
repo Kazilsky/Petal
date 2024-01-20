@@ -31,6 +31,7 @@ async def answer(user, msg):
 
     t5_output = t5_output.replace('<extra_id_0>', '').strip()
     t5_output = t5_output.split('Собеседник')[0].strip()
+    return t5_output
     '''with open('memory.json') as f:
         datamem = json.load(f)
     datamem['Log'+messageint] = f'{user}: {msg} Твой ответ: {t5_output}'
