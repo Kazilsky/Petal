@@ -27,4 +27,4 @@ jobs:
           DISCORDTOKEN: ${{ secrets.Discordtoken }}
         run: |
           source venv/bin/activate
-          python $GITHUB_WORKSPACE/main.py 
+          python $GITHUB_WORKSPACE/main.py ${{ secrets.DiscordToken }}
