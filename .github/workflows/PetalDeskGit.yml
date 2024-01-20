@@ -17,9 +17,7 @@ jobs:
       - name: Download Venv emulate
         run: |
           pip install virtualenv
-          cmd /c dir
       - name: Venv options setting
         run: |
-          cmd source venv/Scripts/activate
-          more requirements.txt
+          cmd source venv/bin/activate
           python $GITHUB_WORKSPACE/main.py 
