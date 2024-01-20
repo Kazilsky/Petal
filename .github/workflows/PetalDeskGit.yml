@@ -17,7 +17,7 @@ jobs:
 
       - name: Venv options setting
         run: |
-          source venv/bin/activate
           virtualenv venv
+          source venv/bin/activate
           pip install -r $GITHUB_WORKSPACE/requirements.txt
           python $GITHUB_WORKSPACE/main.py 
