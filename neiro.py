@@ -7,13 +7,13 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 t5_tokenizer = transformers.GPT2Tokenizer.from_pretrained("SiberiaSoft/SiberianPersonaFred")
 t5_model = transformers.T5ForConditionalGeneration.from_pretrained("SiberiaSoft/SiberianPersonaFred")
-messageint = 0
+#messageint = 0
 
 
 async def answer(user, msg):
     #with open('memory.json') as f:
         #datamem = json.load(f)
-    messageint = messageint + 1
+    #messageint = messageint + 1
     print('-'*80)
     dialog = []
     if len(msg) == 0:
