@@ -18,9 +18,7 @@ jobs:
       - name: Venv options setting
         run: |
           virtualenv venv
-          cd venv
-          ls
-          source venv\bin\activate
+          source venv/bin/activate
           pip install python-Levenshtein
           pip install -r $GITHUB_WORKSPACE/requirements.txt
           
@@ -28,6 +26,6 @@ jobs:
         env: # Set the secret as an input
           DISCORDTOKEN: ${{ secrets.Discordtoken }}
         run: |
-          source venv\bin\activate
+          source venv/bin/activate
           python os.putenv DiscordToken, ${{ secrets.Discordtoken }}
           python $GITHUB_WORKSPACE/main.py 
