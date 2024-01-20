@@ -22,8 +22,8 @@ jobs:
           pip install python-Levenshtein
           pip install -r $GITHUB_WORKSPACE/requirements.txt
       - name: Venv starting...
-        env: 
-            Discordtoken: ${{ secrets.DISCORDTOKEN }}
-        run: |
-          source venv/bin/activate
-          python $GITHUB_WORKSPACE/main.py 
+        with: # Set the secret as an input
+          DISCORDTOKEN: ${{ secrets.Discordtoken }}
+          run: |
+            source venv/bin/activate
+            python $GITHUB_WORKSPACE/main.py 
