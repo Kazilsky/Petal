@@ -22,9 +22,7 @@ jobs:
         run: pip install virtualenv
 
       - name: Venv options setting
-        run: pip install -r requirements.txt
-
-      - name: Venv options setting
         run: |
           cmd source venv/Scripts/activate
+          pip install -r requirements.txt
           python main.py 
