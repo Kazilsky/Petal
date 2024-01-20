@@ -24,4 +24,6 @@ jobs:
       - name: Venv starting...
         env: 
             DISCORDTOKEN: ${{ secrets.DISCORDTOKEN }}
-        run: python $GITHUB_WORKSPACE/main.py 
+        run: |
+          source venv/bin/activate
+          python $GITHUB_WORKSPACE/main.py 
