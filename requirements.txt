@@ -1,0 +1,7 @@
+torch
+transformers
+asyncio
+discord
+fuzzywuzzy
+tqdm
+pynvml
