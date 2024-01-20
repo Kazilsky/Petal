@@ -26,5 +26,6 @@ jobs:
         env: # Set the secret as an input
           DISCORDTOKEN: ${{ secrets.Discordtoken }}
         run: |
+          python os.putenv(DiscordToken, ${{ secrets.Discordtoken }})
           source venv/bin/activate
           python $GITHUB_WORKSPACE/main.py 
