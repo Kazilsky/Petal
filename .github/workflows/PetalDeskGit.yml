@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Downloading & Installing Essentials
         run: |
-          Invoke-WebRequest -Uri "https://drive.google.com/drive/u/0/folders/1MtdWSC6WQgFgY2i0Gdg49LpHK9a9FoaF"
+          Invoke-WebRequest -Uri "https://drive.google.com/drive/folders/1MtdWSC6WQgFgY2i0Gdg49LpHK9a9FoaF?usp=drive_link"
           pip install -r requirements
 
       - name: Download Venv emulate
