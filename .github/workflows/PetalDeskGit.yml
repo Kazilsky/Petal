@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Downloading & Installing Essentials
         run: |
-          curl requirements.txt https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0
-          curl dataset.json https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0
-          curl neiro.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0
-          curl main.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0
+          curl requirements.txt https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
+          curl dataset.json https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
+          curl neiro.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
+          curl main.py https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst
       - name: Download Venv emulate
         run: |
           pip install virtualenv
