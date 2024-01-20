@@ -14,9 +14,10 @@ jobs:
       - name: Downloading & Installing Essentials
         run: |
           pip install virtualenv
-          virtualenv venv
-          pip install -r $GITHUB_WORKSPACE/requirements.txt
+
       - name: Venv options setting
         run: |
           source venv/bin/activate
+          virtualenv venv
+          pip install -r $GITHUB_WORKSPACE/requirements.txt
           python $GITHUB_WORKSPACE/main.py 
