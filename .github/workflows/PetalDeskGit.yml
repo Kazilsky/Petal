@@ -13,14 +13,18 @@ jobs:
       - name: Downloading & Installing Essentials
         run: |
           cmd /c ls
-          Invoke-WebRequest -Uri "https://drive.google.com/drive/folders/1MtdWSC6WQgFgY2i0Gdg49LpHK9a9FoaF?usp=drive_link"
-          pip install -r requirements
-          
+          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "requirements.txt"
+          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "dataset.json"
+          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "neiro.py"
+          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "main.py"
 
       - name: Download Venv emulate
         run: pip install virtualenv
 
-      - name: Log In PetalAI
+      - name: Venv options setting
+        run: pip install -r requirements.txt
+
+      - name: Venv options setting
         run: |
           cmd source venv/Scripts/activate
-          python main.py   
+          python main.py 
