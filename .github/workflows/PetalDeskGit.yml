@@ -14,6 +14,7 @@ jobs:
       - name: Downloading & Installing Essentials
         run: |
           pip install virtualenv
+          pip install python-Levenshtein
 
       - name: Venv options setting
         run: |
