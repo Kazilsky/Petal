@@ -19,8 +19,9 @@ jobs:
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "main.py"
 
       - name: Download Venv emulate
-        run: pip install virtualenv
-
+        run: |
+          pip install virtualenv
+          cmd /c ls
       - name: Venv options setting
         run: |
           cmd source venv/Scripts/activate
