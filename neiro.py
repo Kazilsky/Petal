@@ -1,7 +1,6 @@
 import torch
 import transformers
 import asyncio
-import redis
 import json
 
 use_cuda = torch.cuda.is_available()
