@@ -21,4 +21,7 @@ jobs:
           virtualenv venv
           source venv/bin/activate
           pip install -r $GITHUB_WORKSPACE/requirements.txt
-          python $GITHUB_WORKSPACE/main.py 
+      - name: Venv starting...
+        env: 
+            DISCORDTOKEN: ${{ secrets.DISCORDTOKEN }}
+        run: python $GITHUB_WORKSPACE/main.py 
