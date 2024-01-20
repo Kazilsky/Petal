@@ -18,6 +18,7 @@ jobs:
       - name: Venv options setting
         run: |
           virtualenv venv
+          cd venv
           ls
           source venv\bin\activate
           pip install python-Levenshtein
