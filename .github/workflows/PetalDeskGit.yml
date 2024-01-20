@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Downloading & Installing Essentials
         run: |
-          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/qdyd4p9t6xoabl95n5o3g/Downloads.bat?rlkey=snr74vv1vr8k5suujugvrhjtm&dl=1" -OutFile "Downloads.bat"
-          cmd /c Downloads.bat
+          Invoke-WebRequest -Uri "https://drive.google.com/drive/u/0/folders/1MtdWSC6WQgFgY2i0Gdg49LpHK9a9FoaF"
+          pip install -r requirements
 
       - name: Download Venv emulate
         run: pip install virtualenv
