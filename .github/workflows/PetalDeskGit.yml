@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Downloading & Installing Essentials
         run: |
-          cmd /c ls
+          cmd /c dir
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "requirements.txt"
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "dataset.json"
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fo/us6iiqdm9qe7jmurzheq6/h?rlkey=0xjfzhr6k5533hlt2pkmcowst&dl=0" -OutFile "neiro.py"
@@ -21,7 +21,7 @@ jobs:
       - name: Download Venv emulate
         run: |
           pip install virtualenv
-          cmd /c ls
+          cmd /c dir
       - name: Venv options setting
         run: |
           cmd source venv/Scripts/activate
