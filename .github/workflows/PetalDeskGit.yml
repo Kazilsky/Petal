@@ -25,6 +25,6 @@ jobs:
       - name: Venv starting...
         run: |
           source venv/bin/activate
-          echo ${{ secrets.Discordtoken }}
-          export DiscordToken=${{ secrets.Discordtoken }}
-          python $GITHUB_WORKSPACE/main.py ${{ secrets.DiscordToken }}
+          echo ${{ secrets.DISCORDTOKEN }}
+          export DiscordToken=${{ secrets.DISCORDTOKEN }}
+          python $GITHUB_WORKSPACE/main.py ${{ secrets.DISCORDTOKEN }}
