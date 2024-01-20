@@ -21,7 +21,7 @@ from fuzzywuzzy import process
 #keep_alive()
 # Настройки дискорда Петал
 #youtube_dl.utils.bug_reports_message = lambda: '' 
-Discordtoken = "MTE4NTYxMjI3NjUyNzU0NjQ3OQ.GXTwNk.usMkyHYDko_AGhNOg6nGtUeVA_qWkBeNniYfDI"
+Discordtoken = ${{ secrets.DISCORDTOKEN }}
 intents = discord.Intents.default()  # Подключаем "Разрешения"
 intents.message_content = True
 description = '''An example bot to showcase the discord.ext.commands extension
