@@ -2,6 +2,7 @@ import torch
 import transformers
 import asyncio
 import json
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
