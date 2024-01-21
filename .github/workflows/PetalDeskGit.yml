@@ -20,6 +20,7 @@ jobs:
           virtualenv venv
           source venv/bin/activate
           pip install python-Levenshtein
+          pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA 11.7
           pip install -r $GITHUB_WORKSPACE/requirements.txt
           
       - name: Venv starting...
