@@ -36,8 +36,8 @@ async def answer(user, msg):
 datamem['Log'+messageint] = f'{user}: {msg} Твой ответ: {t5_output}'
 with open('myfile.json', 'w') as f:
     json.dump(datamem, f, ensure_ascii=False, indent=4)
-return t5_output'''
-  '''output = llm(
+return t5_output
+  output = llm(
   "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{prompt}\n\n### Response:", # Prompt
   max_tokens=512,  # Generate up to 512 tokens
   stop=["</s>"],   # Example stop token - not necessarily correct for this specific model! Please check before using.
@@ -55,14 +55,14 @@ return t5_output'''
               "content": f"Имя: {user}: {msg}"
           }
       ]
-  )'''
+  )
 
  #with open('memory.json') as f:
  #datamem = json.load(f)
  #messageint = messageint + 1
     #print('-'*80)
 
-'''while True:
+while True:
     print('-'*80)
     dialog = []
     while True:
