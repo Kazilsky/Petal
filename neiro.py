@@ -6,7 +6,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
-model_name_or_path = "TheBloke/airoboros-l2-13B-gpt4-1.4.1-GPTQ"
+model_name_or_path = "TheBloke/airoboros-l2-13B-gpt4-1.4.1-GGUF"
 # To use a different branch, change revision
 # For example: revision="main"
 model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
