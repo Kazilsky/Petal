@@ -5,8 +5,8 @@ import json
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
-t5_tokenizer = transformers.GPT2Tokenizer.from_pretrained("SiberiaSoft/SiberianPersonaFred")
-t5_model = transformers.T5ForConditionalGeneration.from_pretrained("SiberiaSoft/SiberianPersonaFred")
+t5_tokenizer = transformers.GPT2Tokenizer.from_pretrained("TheBloke/airoboros-l2-13B-gpt4-1.4.1-GPTQ")
+t5_model = transformers.T5ForConditionalGeneration.from_pretrained("TheBloke/airoboros-l2-13B-gpt4-1.4.1-GPTQ")
 #messageint = 0
 
 
