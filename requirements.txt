@@ -6,3 +6,5 @@ fuzzywuzzy
 tqdm
 pynvml
 accelerate
+optimum
+auto-gptq
