@@ -41,7 +41,7 @@ async def answer(user, msg):
  #with open('memory.json') as f:
  #datamem = json.load(f)
  #messageint = messageint + 1
-    print('-'*80)
+    #print('-'*80)
     dialog = []
     if len(msg) == 0:
         pass
