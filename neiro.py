@@ -18,7 +18,7 @@ llm = Llama(
 # Simple inference example
 
 async def answer(user, msg):
-  output = llm(
+  '''output = llm(
   "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{prompt}\n\n### Response:", # Prompt
   max_tokens=512,  # Generate up to 512 tokens
   stop=["</s>"],   # Example stop token - not necessarily correct for this specific model! Please check before using.
@@ -36,9 +36,9 @@ async def answer(user, msg):
               "content": f"Имя: {user}: {msg}"
           }
       ]
-  )
+  )'''
 
-'''#with open('memory.json') as f:
+#with open('memory.json') as f:
 #datamem = json.load(f)
 #messageint = messageint + 1
 print('-'*80)
@@ -58,7 +58,7 @@ if '</s>' in t5_output:
 
 t5_output = t5_output.replace('<extra_id_0>', '').strip()
 t5_output = t5_output.split('Собеседник')[0].strip()
-return t5_output'''
+return t5_output
 '''with open('memory.json') as f:
     datamem = json.load(f)
 datamem['Log'+messageint] = f'{user}: {msg} Твой ответ: {t5_output}'
