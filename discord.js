@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const spawn = require("child_process").spawn;
 const fuzz = require('fuzzball');
 
@@ -10,8 +10,11 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping, 
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
   ],
-  partials: ["MESSAGE", "CHANNEL"]
+  partials: [Partials.Channel]
 });
 
 var logs = true;
