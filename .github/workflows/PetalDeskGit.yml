@@ -28,4 +28,4 @@ jobs:
           source venv/bin/activate
           echo ${{ secrets.DISCORDTOKEN }}
           export DiscordToken=${{ secrets.DISCORDTOKEN }}
-          python $GITHUB_WORKSPACE/main.py ${{ secrets.DISCORDTOKEN }}
+          node $GITHUB_WORKSPACE/discord.js ${{ secrets.DISCORDTOKEN }}
