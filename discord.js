@@ -21,7 +21,7 @@ client.on("ready", () =>{
 client.on("messageCreate", (message) => {
     console.log(message.author);
     console.log(message.author.user);
-    console.log(message.author.user.username);
+    console.log(message.author.user[username]);
     var options = {
         mode: 'text',
         pythonOptions: ['-u'],
