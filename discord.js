@@ -41,11 +41,9 @@ client.on("messageCreate", (message) => {
         console.log("Сообщение: " + message.author + ": " + message.content )
     }
     if (summonUP > 80 || summonDOWN > 80) {
-        pyAI.run(message.author, message.content, function (answer) {
-            message.channel.reply(answer)
-            if (answer)
-                throw answer
-        });
+        PythonShell.runString('import AI/neiro.py;answer(${message.author}, ${message.content})', null).then(messages=>{
+            console.log('finished');
+          });
     }
 });
 
