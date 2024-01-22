@@ -1,6 +1,5 @@
 {
   "name": "dcpetal",
-  "type": "module",
   "version": "1.0.0",
   "description": "Discord client for Python AI (Petal) bot based on Tenserflow and machine learning",
   "main": "discord.js",
