@@ -1,0 +1,24 @@
+{
+  "name": "dcpetal",
+  "version": "1.0.0",
+  "description": "Discord client for Python AI (Petal) bot based on Tenserflow and machine learning",
+  "main": "discord.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kazilsky/Petal_GPT4.git"
+  },
+  "author": "Kazilsky",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Kazilsky/Petal_GPT4/issues"
+  },
+  "homepage": "https://github.com/Kazilsky/Petal_GPT4#readme",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "fuzzball": "^2.1.2",
+    "python-shell": "^5.0.0"
+  }
+}
