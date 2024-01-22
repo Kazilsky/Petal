@@ -2,7 +2,7 @@ const {Client, Intents} = require("discord.js");
 const PythonShell = require('python-shell').PythonShell;
 
 const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
-const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+const client = new Client({ intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages] });
 
 client.on("ready", () =>{
     console.log("Вход в бота сделан успешно"); //Сообщение, когда бот в сети 
