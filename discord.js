@@ -26,8 +26,8 @@ client.on("messageCreate", (message) => {
         args: [message.author, message.content]
       };
     var pythonProcess = spawn('python', ['AI/neiro.py', message.author, message.content]);
-    summonUP = fuzz.partial_ratio('Петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
-    summonDOWN = fuzz.partial_ratio('петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
+    var summonUP = fuzz.partial_ratio('Петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
+    var summonDOWN = fuzz.partial_ratio('петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
     if (message.content == "!LogsOn") {
         logs = true 
         message.channel.reply("Логи включены!")
