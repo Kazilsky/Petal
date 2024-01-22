@@ -40,7 +40,7 @@ client.on("messageCreate", (message) => {
     if (logs == true) {
         console.log("Петал, соотношение: " + summonUP);
         console.log("петал, соотношение: " + summonDOWN);
-        console.log("Сообщение: " + user + ": " + message.content )
+        console.log("Сообщение: " + message.content + ": " + message.content )
     }
     if (summonUP > 80 || summonDOWN > 80) {
       message.channel.send("Hello from AI bot")
