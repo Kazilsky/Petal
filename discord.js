@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
-const spawn = require("child_process").spawn;
+import {PythonShell} from 'python-shell';
+let pyAI = new PythonShell('AI/neiro.py', { mode: 'text'});
 const fuzz = require('fuzzball');
 
 const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
@@ -23,12 +24,6 @@ client.on("ready", () =>{
 });
 
 client.on("messageCreate", (message) => {
-    console.log(message.author);
-    var options = {
-        mode: 'text',
-        pythonOptions: ['-u'],
-        args: [message.author, message.content]
-      };
     var pythonProcess = spawn('python', ['AI/neiro.py', message.author, message.content]);
     var summonUP = fuzz.partial_ratio('Петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
     var summonDOWN = fuzz.partial_ratio('петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
@@ -43,13 +38,14 @@ client.on("messageCreate", (message) => {
     if (logs == true) {
         console.log("Петал, соотношение: " + summonUP);
         console.log("петал, соотношение: " + summonDOWN);
-        console.log("Сообщение: " + message.content + ": " + message.content )
+        console.log("Сообщение: " + message.author + ": " + message.content )
     }
     if (summonUP > 80 || summonDOWN > 80) {
-      message.channel.send("Hello from AI bot")
-      pythonProcess.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-      });
+        pyAI.run(message.author, message.content, function (answer) {
+            message.channel.reply(answer)
+            if (answer)
+                throw answer
+        });
     }
 });
 
