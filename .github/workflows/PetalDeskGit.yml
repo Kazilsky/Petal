@@ -29,4 +29,5 @@ jobs:
           echo ${{ secrets.DISCORDTOKEN }}
           export DiscordToken=${{ secrets.DISCORDTOKEN }}
           npm install discord.js
+          npm install python-shell
           node $GITHUB_WORKSPACE/discord.js ${{ secrets.DISCORDTOKEN }}
