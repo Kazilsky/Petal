@@ -1,5 +1,6 @@
 {
   "name": "dcpetal",
+  "type": "module",
   "version": "1.0.0",
   "description": "Discord client for Python AI (Petal) bot based on Tenserflow and machine learning",
   "main": "discord.js",
@@ -7,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "module",
+    "type": "git",
     "url": "git+https://github.com/Kazilsky/Petal_GPT4.git"
   },
   "author": "Kazilsky",
