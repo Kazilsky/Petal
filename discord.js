@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
-import {PythonShell} from 'python-shell';
+let {PythonShell} = require('python-shell')
 let pyAI = new PythonShell('AI/neiro.py', { mode: 'text'});
 const fuzz = require('fuzzball');
 
