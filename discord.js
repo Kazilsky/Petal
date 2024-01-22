@@ -24,7 +24,6 @@ client.on("ready", () =>{
 });
 
 client.on("messageCreate", (message) => {
-    var pythonProcess = spawn('python', ['AI/neiro.py', message.author, message.content]);
     var summonUP = fuzz.partial_ratio('Петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
     var summonDOWN = fuzz.partial_ratio('петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
     if (message.content == "!LogsOn") {
