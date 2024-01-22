@@ -16,7 +16,7 @@ client.on("ready", () =>{
     console.log("Вход в бота сделан успешно"); //Сообщение, когда бот в сети 
 });
 
-client.on("message", (message) => {
+client.on("messageCreate", (message) => {
     console.log(message);
     var options = {
         mode: 'text',
@@ -44,7 +44,7 @@ client.on("message", (message) => {
       pythonProcess.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
       });
-            }
+    }
 });
 
 client.login(token);
