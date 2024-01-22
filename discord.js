@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const spawn = require("child_process").spawn;
+const fuzz = require('fuzzball');
 
 const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
 const client = new Client({
