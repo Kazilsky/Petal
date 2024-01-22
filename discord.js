@@ -1,7 +1,6 @@
 const {Client, Intents} = require("discord.js");
 const PythonShell = require('python-shell').PythonShell;
 
-const PythonShell = require('python-shell').PythonShell;
 const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
 const client = new Client({
     intents:[
