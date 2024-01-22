@@ -28,4 +28,5 @@ jobs:
           source venv/bin/activate
           echo ${{ secrets.DISCORDTOKEN }}
           export DiscordToken=${{ secrets.DISCORDTOKEN }}
+          npm install discord.js
           node $GITHUB_WORKSPACE/discord.js ${{ secrets.DISCORDTOKEN }}
