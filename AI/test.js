@@ -8,3 +8,4 @@ function answer(Author, question) {
     PythonShell.run('test.py', options).then(messages=>{    
         console.log('' + message);
     });}
+module.exports = { answer };
