@@ -24,7 +24,6 @@ client.on("ready", () =>{
 
 client.on("messageCreate", (message) => {
     var summonUP = fuzz.partial_ratio('Петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
-    var summonDOWN = fuzz.partial_ratio('петал', message.content) // Настройки вызова fuzzywuzzy для дискорда
     if (message.content == "!LogsOn") {
         logs = true 
         message.channel.reply("Логи включены!")
@@ -35,10 +34,9 @@ client.on("messageCreate", (message) => {
     }
     if (logs == true) {
         console.log("Петал, соотношение: " + summonUP);
-        console.log("петал, соотношение: " + summonDOWN);
-        console.log("Сообщение: " + message.author + ": " + message.content)
+        console.log("message.author + ": " + message.content)
     }
-    if (summonUP > 80 || summonDOWN > 80) {
+    if (summonUP > 80) {
         sendsms.answer(message.author, message.content)
 }
 });
