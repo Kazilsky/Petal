@@ -1,7 +1,6 @@
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
-let {PythonShell} = require('python-shell')
-let pyAI = new PythonShell('AI/neiro.py', { mode: 'text'});
 const fuzz = require('fuzzball');
+const sendsms = require('node:test')
 
 const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
 const client = new Client({
@@ -37,13 +36,11 @@ client.on("messageCreate", (message) => {
     if (logs == true) {
         console.log("Петал, соотношение: " + summonUP);
         console.log("петал, соотношение: " + summonDOWN);
-        console.log("Сообщение: " + message.author + ": " + message.content )
+        console.log("Сообщение: " + message.author + ": " + message.content)
     }
     if (summonUP > 80 || summonDOWN > 80) {
-        PythonShell.runString('import AI/neiro.py;answer(${message.author}, ${message.content})', null).then(messages=>{
-            console.log('finished');
-          });
-    }
+        sendsms.answer(message.author, message.content)
+}
 });
 
 client.login(token);
