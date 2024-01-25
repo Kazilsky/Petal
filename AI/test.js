@@ -5,7 +5,7 @@ function answer(Author, question) {
     args: [Author, question]
     };
 
-    PythonShell.run('test.py', options).then(messages=>{    
+    PythonShell.run('./AI/test.py', options).then(messages=>{    
         console.log('' + message);
     });}
 module.exports = { answer };
