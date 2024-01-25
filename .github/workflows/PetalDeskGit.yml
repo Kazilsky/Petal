@@ -20,7 +20,7 @@ jobs:
           
       - name: Venv starting...
         run: |
-          echo ${{ secrets.DISCORDTOKEN }}
+          echo ${{ secrets.DISCORDTOKEN }} > .env
           export DiscordToken=${{ secrets.DISCORDTOKEN }}
           npm install discord.js
           npm install python-shell
