@@ -34,7 +34,7 @@ client.on("messageCreate", (message) => {
     }
     if (logs == true) {
         console.log("Петал, соотношение: " + summonUP);
-        console.log("message.author + ": " + message.content)
+        console.log(message.author + ": " + message.content)
     }
     if (summonUP > 80) {
         sendsms.answer(message.author, message.content)
