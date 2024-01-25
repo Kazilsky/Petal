@@ -9,25 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 129600
     
-    steps:
-      - uses: actions/checkout@v3
-      - name: Downloading & Installing Essentials
-        run: |
-          pip install virtualenv
-          
+    steps:       
       - name: Venv options setting
         run: |
-          virtualenv venv
-          source venv/bin/activate
           pip install python-Levenshtein
           pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA 11.7
           pip install -r $GITHUB_WORKSPACE/requirements.txt
           
       - name: Venv starting...
         run: |
-          source venv/bin/activate
           echo ${{ secrets.DISCORDTOKEN }}
           export DiscordToken=${{ secrets.DISCORDTOKEN }}
           npm install discord.js
           npm install python-shell
+      - name: Petal starting...
+        run: |
           node $GITHUB_WORKSPACE/discord.js ${{ secrets.DISCORDTOKEN }}
