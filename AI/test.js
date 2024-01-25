@@ -1,3 +1,4 @@
+let {PythonShell} = require('python-shell')
 function answer(Author, question) {
     var options = {
     mode: 'text',
