@@ -16,10 +16,10 @@ jobs:
           pip install python-Levenshtein
           pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA 11.7
           pip install -r $GITHUB_WORKSPACE/requirements.txt
-      - shell: bash
+      - name: Venv starting...
+        shell: bash
         env:
           DISCORDTOKEN:  ${{secrets.DISCORDTOKEN}}
-      - name: Venv starting...
         run: |
           echo "$DISCORDTOKEN"
           npm install discord.js
