@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Set settings...
         uses: "actions/checkout@v1"
-      - name: Venv options setting
+      - name: Venv options setting 
         run: |
           pip install python-Levenshtein
           pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA 11.7
