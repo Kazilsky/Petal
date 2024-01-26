@@ -1,6 +1,6 @@
 name: PetalDeskGit
 
-on : [push]
+on : [push] 
 
 jobs:
   build:
