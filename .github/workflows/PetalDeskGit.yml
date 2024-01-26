@@ -24,6 +24,4 @@ jobs:
           echo "$DISCORDTOKEN"
           npm install discord.js
           npm install python-shell
-      - name: Petal starting...
-        run: |
           node $GITHUB_WORKSPACE/discord.js "$DISCORDTOKEN"
