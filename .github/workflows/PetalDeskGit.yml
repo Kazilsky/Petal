@@ -6,7 +6,7 @@ jobs:
   build:
     name: Building Petal...
     runs-on: ubuntu-latest
-    timeout-minutes: 129600
+    timeout-minutes: 129600 
     
     steps:
       - name: Set settings...
