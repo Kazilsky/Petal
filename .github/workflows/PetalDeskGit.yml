@@ -20,7 +20,7 @@ jobs:
           
       - name: Venv starting...
         env: # Or as an environment variable
-          DISCORDTOKEN: ${{ secrets.DISCORDTOKEN }}
+          DISCORDTOKEN: ${{secrets.DISCORDTOKEN}}
         run: |
           echo $DISCORDTOKEN
           export DiscordToken="$DISCORDTOKEN"
