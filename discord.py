@@ -23,7 +23,7 @@ from fuzzywuzzy import process
 #keep_alive()
 # Настройки дискорда Петал
 #youtube_dl.utils.bug_reports_message = lambda: ''
-Discordtoken = "MTE4NTYxMjI3NjUyNzU0NjQ3OQ.GTPs6L.zGAWLj8nM9eiUPMGjuimyNFQkbAXZmsCEHRcEM"
+Discordtoken = ""
 intents = discord.Intents.default()  # Подключаем "Разрешения"
 intents.message_content = True
 
