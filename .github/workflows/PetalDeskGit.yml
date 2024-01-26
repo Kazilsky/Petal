@@ -22,10 +22,10 @@ jobs:
         env: # Or as an environment variable
           DISCORDTOKEN: ${{ secrets.DISCORDTOKEN }}
         run: |
-          echo "$SUPER_SECRET"
-          export DiscordToken="$SUPER_SECRET"
+          echo "$DISCORDTOKEN"
+          export DiscordToken="$DISCORDTOKEN"
           npm install discord.js
           npm install python-shell
       - name: Petal starting...
         run: |
-          node $GITHUB_WORKSPACE/discord.js "$SUPER_SECRET"
+          node $GITHUB_WORKSPACE/discord.js "$DISCORDTOKEN"
