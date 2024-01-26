@@ -23,7 +23,6 @@ jobs:
           DISCORDTOKEN: ${{secrets.DISCORDTOKEN}}
         run: |
           echo $DISCORDTOKEN
-          export DiscordToken="$DISCORDTOKEN"
           npm install discord.js
           npm install python-shell
       - name: Petal starting...
