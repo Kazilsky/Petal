@@ -19,11 +19,13 @@ jobs:
           pip install -r $GITHUB_WORKSPACE/requirements.txt
           
       - name: Venv starting...
+        env: # Or as an environment variable
+          DISCORDTOKEN: ${{ secrets.DISCORDTOKEN }}
         run: |
-          echo ${{ secrets.DISCORDTOKEN }} > .env
-          export DiscordToken=${{ secrets.DISCORDTOKEN }}
+          echo "$SUPER_SECRET"
+          export DiscordToken="$SUPER_SECRET"
           npm install discord.js
           npm install python-shell
       - name: Petal starting...
         run: |
-          node $GITHUB_WORKSPACE/discord.js ${{ secrets.DISCORDTOKEN }}
+          node $GITHUB_WORKSPACE/discord.js "$SUPER_SECRET"
