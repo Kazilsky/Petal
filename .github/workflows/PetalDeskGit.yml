@@ -1,7 +1,6 @@
 name: PetalDeskGit
 
-on:
-  workflow_dispatch:
+on : [push]
 
 jobs:
   build:
@@ -17,14 +16,14 @@ jobs:
           pip install python-Levenshtein
           pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA 11.7
           pip install -r $GITHUB_WORKSPACE/requirements.txt
-          
+      - shell: bash
+        env:
+          DISCORDTOKEN:  ${{secrets.DISCORDTOKEN}}
       - name: Venv starting...
-        env: # Or as an environment variable
-          DISCORDTOKEN: ${{secrets.DISCORDTOKEN}}
         run: |
-          echo $DISCORDTOKEN
+          echo "$DISCORDTOKEN"
           npm install discord.js
           npm install python-shell
       - name: Petal starting...
         run: |
-          node $GITHUB_WORKSPACE/discord.js $DISCORDTOKEN
+          node $GITHUB_WORKSPACE/discord.js "$DISCORDTOKEN"
