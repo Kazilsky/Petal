@@ -25,4 +25,4 @@ jobs:
           echo DISCORDTOKEN=${{secrets.DISCORD_TOKEN}} > .env
           npm install discord.js
           npm install python-shell
-          node $GITHUB_WORKSPACE/discord.js "$DISCORDTOKEN"
+          node $GITHUB_WORKSPACE/discord.js $DISCORDTOKEN
