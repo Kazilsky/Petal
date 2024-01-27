@@ -21,8 +21,8 @@ jobs:
           CI: true
           DISCORDTOKEN:  ${{secrets.DISCORD_TOKEN}}
         run: |
-          export DISCORDTOKEN=${{secrets.discord_token}}
-          echo DISCORDTOKEN=${{secrets.discord_token}} > .env
+          export DISCORDTOKEN=${{secrets.DISCORD_TOKEN}}
+          echo DISCORDTOKEN=${{secrets.DISCORD_TOKEN}} > .env
           npm install discord.js
           npm install python-shell
           node $GITHUB_WORKSPACE/discord.js "$DISCORDTOKEN"
