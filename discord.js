@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const fuzz = require('fuzzball');
 const sendsms = require('./AI/test')
 
-const token = process.env.DiscordToken; //Токен, сохраненный на 5-м шаге данного руководства 
+const token = process.env.DISCORDTOKEN; //Токен, сохраненный на 5-м шаге данного руководства 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
