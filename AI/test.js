@@ -7,6 +7,6 @@ function answer(Author, question) {
 
     PythonShell.run('./AI/neiro.py', options).then(messages=>{    
         console.log('' + message)
+        exports.message = answer;
         return message;
     });}
-exports.answer = answer;
