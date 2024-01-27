@@ -25,4 +25,5 @@ jobs:
           echo DISCORDTOKEN='${{secrets.DISCORD_TOKEN}}' > .env
           npm install discord.js
           npm install python-shell
+          npm install zerorpc
           node $GITHUB_WORKSPACE/discord.js '$DISCORDTOKEN'
