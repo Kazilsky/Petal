@@ -9,4 +9,4 @@ function answer(Author, question) {
         console.log('' + message)
         return message;
     });}
-exports.answer();
+exports.answer = answer;
