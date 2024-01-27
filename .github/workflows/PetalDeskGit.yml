@@ -19,10 +19,10 @@ jobs:
       - name: Venv starting...
         env:
           CI: true
-          DISCORDTOKEN:  '${{secrets.DISCORD_TOKEN}}'
+          DISCORDTOKEN:  '${{secrets.DISCORD_TOKEN}}' 
         run: |
           export DISCORDTOKEN='${{secrets.DISCORD_TOKEN}}'
           echo DISCORDTOKEN='${{secrets.DISCORD_TOKEN}}' > .env
           npm install discord.js
           npm install python-shell
-          node $GITHUB_WORKSPACE/discord.js 
+          node $GITHUB_WORKSPACE/discord.js '$DISCORDTOKEN'
