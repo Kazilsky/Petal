@@ -37,7 +37,9 @@ client.on("messageCreate", (message) => {
         console.log(message.author + ": " + message.content)
     }
     if (summonUP > 80) {
-         message.channel.send(sendsms.answer(message.author, message.content))
+      answer = sendsms.answer(message.author, message.content)
+         console.log(answer)
+         message.channel.send(answer)
 }
 });
 
