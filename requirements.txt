@@ -8,3 +8,4 @@ pynvml
 accelerate
 optimum
 auto-gptq
+zerorpc
