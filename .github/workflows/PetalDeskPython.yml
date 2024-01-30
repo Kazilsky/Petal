@@ -1,4 +1,4 @@
-name: PetalDeskGit
+name: PetalDeskGitPython
 
 on : workflow_dispatch 
 
