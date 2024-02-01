@@ -24,4 +24,4 @@ jobs:
         run: |
           export DISCORDTOKEN='${{secrets.DISCORD_TOKEN}}'
           echo DISCORDTOKEN='${{secrets.DISCORD_TOKEN}}' > .env
-          python $GITHUB_WORKSPACE/discord.py '$DISCORDTOKEN'
+          python $GITHUB_WORKSPACE/discordPetal.py '$DISCORDTOKEN'
