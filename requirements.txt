@@ -1,7 +1,7 @@
 torch
 transformers
 asyncio
-discord
+discord.ext
 fuzzywuzzy
 tqdm
 pynvml
