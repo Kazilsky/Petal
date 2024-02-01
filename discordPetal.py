@@ -9,7 +9,7 @@ import os
 #import youtube_dl
 import time
 
-from neiro import answer
+from /AI/neiro import answer
 # from AI import notspeakchannel
 # from AI import answerquestion
 # from AI import chessplay
