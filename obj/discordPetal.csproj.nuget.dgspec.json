@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Alone\\Desktop\\discordPetal\\discordPetal.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Alone\\Desktop\\discordPetal\\discordPetal.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Alone\\Desktop\\discordPetal\\discordPetal.csproj",
+        "projectName": "discordPetal",
+        "projectPath": "C:\\Users\\Alone\\Desktop\\discordPetal\\discordPetal.csproj",
+        "packagesPath": "C:\\Users\\Alone\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Alone\\Desktop\\discordPetal\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Alone\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Discord.Net": {
+              "target": "Package",
+              "version": "[3.13.0, )"
+            },
+            "Discord.Net.WebSocket": {
+              "target": "Package",
+              "version": "[3.13.0, )"
+            },
+            "Discord.Net.Webhook": {
+              "target": "Package",
+              "version": "[3.13.0, )"
+            },
+            "FuzzySharp": {
+              "target": "Package",
+              "version": "[2.0.2, )"
+            },
+            "IronPython": {
+              "target": "Package",
+              "version": "[3.4.1, )"
+            },
+            "Python.Runtime": {
+              "target": "Package",
+              "version": "[2.7.9, )"
+            },
+            "Python.Runtime.NETStandard": {
+              "target": "Package",
+              "version": "[3.7.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
