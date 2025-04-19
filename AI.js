@@ -67,7 +67,7 @@ export const ApiNeiro = {
       },
       {
         role: 'system',
-        content: `Имя пользователя: ${user.globalName}`
+        content: `Имя пользователя человека ведущего с тобой диалог в данный промежуток времени: ${user.globalName}`
       },
       {
         role: 'system',
