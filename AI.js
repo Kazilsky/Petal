@@ -98,7 +98,7 @@ export const ApiNeiro = {
     const aiResponse = data.choices[0].message.content;
 
     // 4. Обновление памяти
-    Memory.updateMemory(channelId, message, aiResponse, importance);
+    Memory.updateMemory(channelId, message, aiResponse, importance, user.globalName);
     
     return aiResponse;
   },

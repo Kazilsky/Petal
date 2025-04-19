@@ -58,11 +58,15 @@ class MemorySystem {
     return score;
   }
 
-  updateMemory(channelId, userMsg, aiMsg, importance) {
+  updateMemory(channelId, userMsg, aiMsg, importance, user) {
     // Временная память (последние 8 сообщений)
     const history = this.tempMemory.get(channelId) || [];
     this.tempMemory.set(channelId, [
       ...history.slice(-9),
+      {
+        role: 'system',
+        content: `Имя пользователя: ${user}`
+      },
       { role: 'user', content: userMsg },
       { role: 'assistant', content: aiMsg }
     ]);
