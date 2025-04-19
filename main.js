@@ -1,61 +1,42 @@
-// main.js
-import { Client, GatewayIntentBits, ActivityType } from 'discord.js';
-import { ApiNeiro } from './test.js';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { ApiNeiro } from './AI.js';
+import Memory from './core/memory.js';
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 
-// Устанавливаем статус бота
-function setBotStatus(status, type = ActivityType.Playing) {
-  client.user?.setActivity({
-    name: status,
-    type: type
-  });
-}
-
 client.on('ready', () => {
-  console.log(`🤖 ${client.user.tag} готов!`);
-  setBotStatus('отвечает на вопросы');
+  console.log(`🦾 Бот ${client.user.tag} запущен!`);
 });
 
 client.on('messageCreate', async (message) => {
-  if (message.author.bot || !message.content.trim()) return;
+  if (message.author.bot) return;
+
+  if (!Memory.checkMention(message.content)) {
+    return; // Игнорируем неважные сообщения без упоминания
+  }
 
   try {
-    await message.channel.sendTyping();
+    console.log("test")
     
-    // Определяем настроение по префиксу
-    let mood = 'neutral';
-    if (message.content.startsWith('!friendly')) mood = 'friendly';
-    if (message.content.startsWith('!creative')) mood = 'creative';
-    
-    const question = mood !== 'neutral' 
-      ? message.content.split(' ').slice(1).join(' ')
-      : message.content;
-
-    const response = await ApiNeiro.test(question, { 
-      mood,
-      channelId: message.channelId 
+    const response = await ApiNeiro.generateAIResponse({
+      message: message.content,
+      channelId: message.channelId,
+      user: message.author
     });
 
-    // Отправка ответа с учетом лимита Discord
-    const replyContent = response.content;
-    for (let i = 0; i < replyContent.length; i += 2000) {
-      await message.reply(replyContent.slice(i, i + 2000));
+    // Разбивка длинных сообщений
+    for (let i = 0; i < response.length; i += 2000) {
+      await message.reply(response.slice(i, i + 2000));
     }
-
   } catch (error) {
-    console.error(error);
-    setBotStatus('Ошибка API', ActivityType.Custom);
-    await message.reply(error.message);
-    
-    // Через 5 минут возвращаем нормальный статус
-    setTimeout(() => setBotStatus('отвечает на вопросы'), 300000);
+    console.error('Ошибка:', error);
+    await message.reply('🔧 Произошла ошибка. Попробуйте позже.');
   }
 });
 

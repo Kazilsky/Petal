@@ -25,9 +25,7 @@ class MemorySystem {
     
     // 2. Анализируем контекст через ИИ
     await ApiNeiro.askAIForImportance(message, context)
-    .then((aiAssessment) => {
-      console.log(aiAssessment);
-      
+    .then((aiAssessment) => {  
       // 3. Комбинируем метрики
       return this.calculateFinalScore(isMentioned, aiAssessment);
     });
@@ -36,9 +34,9 @@ class MemorySystem {
   checkMention(message) {
     const botMentions = [
       new RegExp(`^<@!?${'Петал'}>`, 'i'), // @бот
-      /бот[,!]?/i,
       /нейро?/i,
-      /ai\b/i
+      /петал?/i,
+      /ai\b/i,
     ];
     return botMentions.some(regex => regex.test(message));
   }
@@ -52,10 +50,11 @@ class MemorySystem {
     }
     
     // Понижаем для тривиальных ответов
-    if (score < 0.2 && !isMentioned) {
+    /*if (score < 0.2 && !isMentioned) {
       score = 0;
-    }
+    }*/
     
+    console.log(score);
     return score;
   }
 
