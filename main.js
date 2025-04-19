@@ -22,8 +22,6 @@ client.on('messageCreate', async (message) => {
   }
 
   try {
-    console.log("test")
-    
     const response = await ApiNeiro.generateAIResponse({
       message: message.content,
       channelId: message.channelId,
