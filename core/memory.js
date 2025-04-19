@@ -3,7 +3,7 @@ import { ApiNeiro } from '../AI.js';
 
 class MemorySystem {
   constructor() {
-    this.tempMemory = new Map(); // { channelId: Message[] }
+    this.tempMemory = []; // { channelId: Message[] }
     this.permMemory = this.loadPermMemory();
   }
 
@@ -48,28 +48,21 @@ class MemorySystem {
     if (isMentioned) {
       score = Math.min(score + 0.3, 1.0);
     }
-    
-    // Понижаем для тривиальных ответов
-    /*if (score < 0.2 && !isMentioned) {
-      score = 0;
-    }*/
-    
-    console.log(score);
     return score;
   }
 
   updateMemory(channelId, userMsg, aiMsg, importance, user) {
     // Временная память (последние 8 сообщений)
-    const history = this.tempMemory.get(channelId) || [];
-    this.tempMemory.set(channelId, [
-      ...history.slice(-9),
+    const history = this.tempMemory || [];
+    this.tempMemory.push(
+      ...history.slice(-199),
       {
         role: 'system',
         content: `Имя пользователя: ${user}`
       },
       { role: 'user', content: userMsg },
       { role: 'assistant', content: aiMsg }
-    ]);
+    );
 
     // Долговременная память (если важно)
     if (importance > 0.65) {

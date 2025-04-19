@@ -12,7 +12,9 @@ export const ApiNeiro = {
     console.log(user)
 
     moodEngine.analyzeText(message);
-    const context = Memory.tempMemory.get(channelId) || [];
+    const context = Memory.tempMemory || [];
+
+    console.log(context);
 
     // 1.5 Составление промпта:
     const prompt = `
