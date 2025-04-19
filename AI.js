@@ -67,7 +67,7 @@ export const ApiNeiro = {
       },
       {
         role: 'system',
-        content: `Имя пользователя человека ведущего с тобой диалог в данный промежуток времени: ${user.name}`
+        content: `Имя пользователя человека ведущего с тобой диалог в данный промежуток времени: ${user.username}`
       },
       {
         role: 'system',
@@ -98,7 +98,7 @@ export const ApiNeiro = {
     const aiResponse = data.choices[0].message.content;
 
     // 4. Обновление памяти
-    Memory.updateMemory(channelId, message, aiResponse, importance, user.name);
+    Memory.updateMemory(channelId, message, aiResponse, importance, user.username);
     
     return aiResponse;
   },
