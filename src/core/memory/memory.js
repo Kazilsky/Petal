@@ -1,10 +1,41 @@
 import fs from "fs";
-import { ApiNeiro } from "../AI.js";
+// import { validatePath } from '../../utils/fileManager.js';
 
-class MemorySystem {
+export class MemorySystem {
   constructor() {
     this.tempMemory = []; // { channelId: Message[] }
     this.permMemory = this.loadPermMemory();
+  }
+
+  getContext(limit = 100) {
+    if (!this.tempMemory || this.tempMemory.length === 0) {
+      return [];
+    }
+
+    // Фильтруем только user/assistant сообщения и ограничиваем количество
+    const filteredContext = this.tempMemory
+      .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+      .slice(-limit * 2); // Умножаем на 2, так как учитываем пары вопрос-ответ
+
+    // Форматируем контекст для LLM
+    return filteredContext.map(msg => ({
+      role: msg.role,
+      content: this.formatMessageContent(msg)
+    }));
+  }
+
+  formatMessageContent(msg) {
+    if (msg.role === 'system') {
+      return msg.content;
+    }
+    
+    // Для пользовательских сообщений добавляем имя, если есть
+    if (msg.role === 'user' && msg.username) {
+      return `${msg.username}: ${msg.content}`;
+    }
+    
+    // Для ассистента просто возвращаем контент
+    return msg.content;
   }
 
   loadPermMemory() {
@@ -17,17 +48,6 @@ class MemorySystem {
 
   savePermMemory() {
     fs.writeFileSync("./perm_memory.json", JSON.stringify(this.permMemory));
-  }
-
-  async assessImportance(message, context = []) {
-    // 1. Определяем, обращаются ли к боту по имени
-    const isMentioned = this.checkMention(message);
-
-    // 2. Анализируем контекст через ИИ
-    await ApiNeiro.askAIForImportance(message, context).then((aiAssessment) => {
-      // 3. Комбинируем метрики
-      return this.calculateFinalScore(isMentioned, aiAssessment);
-    });
   }
 
   checkMention(message) {
