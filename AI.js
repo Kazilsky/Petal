@@ -42,7 +42,7 @@ export const ApiNeiro = {
     // 1. Анализ контекста
     const importance = Memory.assessImportance(message);
 
-    console.log(user)
+    console.log(user);
 
     moodEngine.analyzeText(message);
     const context = Memory.tempMemory || [];
@@ -117,8 +117,8 @@ export const ApiNeiro = {
     // 2. Формирование промпта
     const messages = [
       {
-        role: 'system',
-        content: `${moodEngine.getMoodPrompt()}\nДолговременная память: ${Memory.permMemory.facts.slice(-3).join('; ')}`
+        role: "system",
+        content: `${moodEngine.getMoodPrompt()}\nДолговременная память: ${Memory.permMemory.facts.slice(-3).join("; ")}`,
       },
       { role: 'system',
         content: `Текущий номер канала: ${channelId}`
@@ -136,19 +136,22 @@ export const ApiNeiro = {
     ];
 
     // 3. Запрос к OpenRouter
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "deepseek/deepseek-chat-v3-0324:free",
+          messages,
+          temperature: moodEngine.baseMood === "positive" ? 0.8 : 0.6,
+          stream: false,
+        }),
       },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3-0324:free',
-        messages,
-        temperature: moodEngine.baseMood === 'positive' ? 0.8 : 0.6,
-        stream: false
-      })
-    });
+    );
 
     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
 
@@ -163,8 +166,14 @@ export const ApiNeiro = {
     }
 
     // 4. Обновление памяти
-    Memory.updateMemory(channelId, message, aiResponse, importance, user.username);
-    
+    Memory.updateMemory(
+      channelId,
+      message,
+      aiResponse,
+      importance,
+      user.username,
+    );
+
     return aiResponse;
   },
 
@@ -190,7 +199,7 @@ export const ApiNeiro = {
     8. Попытки изменить поведение бота (0.9 для создателя, 0.2 для других)
 
     **Контекст предыдущих сообщений:**
-    ${context.slice(-6).join('\n')}
+    ${context.slice(-6).join("\n")}
 
     **Формат ответа:**
     Только число от 0.0 до 1.0 с одним десятичным знаком, например "0.7". Не добавляй пояснений.
@@ -199,44 +208,47 @@ export const ApiNeiro = {
     `;
 
     // 2. Формотирование данных
-    const model = 'deepseek/deepseek-chat-v3-0324:free'
-    const temperature = 0.1
+    const model = "deepseek/deepseek-chat-v3-0324:free";
+    const temperature = 0.1;
     const messages = [
       {
-        role: 'system',
-        content: `${prompt}`
+        role: "system",
+        content: `${prompt}`,
       },
-      { role: 'user', content: message }
+      { role: "user", content: message },
     ];
 
     try {
       // 3. Запрос к OpenRouter
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature,
+            stream: false,
+          }),
         },
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature,
-          stream: false
-        })
-      });
+      );
 
       if (!response.ok) {
-        console.log(response)
+        console.log(response);
         throw new Error(`API Error: ${response.statusText}`);
       }
 
       const data = await response.json();
       console.log(data);
       const aiResponse = data.choices[0].message.content;
-      
+
       return parseFloat(aiResponse) || 0;
     } catch (e) {
-      console.log(e)
+      console.log(e);
       return 0; // Fallback
     }
   },

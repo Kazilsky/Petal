@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { ApiNeiro } from '../AI.js';
+import fs from "fs";
+import { ApiNeiro } from "../AI.js";
 
 class MemorySystem {
   constructor() {
@@ -9,23 +9,22 @@ class MemorySystem {
 
   loadPermMemory() {
     try {
-      return JSON.parse(fs.readFileSync('./perm_memory.json'));
+      return JSON.parse(fs.readFileSync("./perm_memory.json"));
     } catch {
       return { keywords: [], facts: [] };
     }
   }
 
   savePermMemory() {
-    fs.writeFileSync('./perm_memory.json', JSON.stringify(this.permMemory));
+    fs.writeFileSync("./perm_memory.json", JSON.stringify(this.permMemory));
   }
 
   async assessImportance(message, context = []) {
     // 1. Определяем, обращаются ли к боту по имени
     const isMentioned = this.checkMention(message);
-    
+
     // 2. Анализируем контекст через ИИ
-    await ApiNeiro.askAIForImportance(message, context)
-    .then((aiAssessment) => {  
+    await ApiNeiro.askAIForImportance(message, context).then((aiAssessment) => {
       // 3. Комбинируем метрики
       return this.calculateFinalScore(isMentioned, aiAssessment);
     });
@@ -33,17 +32,17 @@ class MemorySystem {
 
   checkMention(message) {
     const botMentions = [
-      new RegExp(`^<@!?${'Петал'}>`, 'i'), // @бот
+      new RegExp(`^<@!?${"Петал"}>`, "i"), // @бот
       /нейро?/i,
       /петал?/i,
       /ai\b/i,
     ];
-    return botMentions.some(regex => regex.test(message));
+    return botMentions.some((regex) => regex.test(message));
   }
 
   calculateFinalScore(isMentioned, aiScore) {
     let score = aiScore;
-    
+
     // Повышаем важность при прямом обращении
     if (isMentioned) {
       score = Math.min(score + 0.3, 1.0);
@@ -56,6 +55,10 @@ class MemorySystem {
     const history = this.tempMemory || [];
     this.tempMemory.push(
       ...history.slice(-199),
+      {
+        role: "system",
+        content: `Имя пользователя в данном сообщении: ${user}`,
+      },
       {
         role: 'system',
         content: `Имя пользователя: ${user}`
@@ -77,3 +80,4 @@ class MemorySystem {
 }
 
 export default new MemorySystem();
+
