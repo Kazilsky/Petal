@@ -60,6 +60,10 @@ class MemorySystem {
         role: 'system',
         content: `Имя пользователя: ${user}`
       },
+      {
+        role: 'system',
+        content: `Айди канала: ${channelId}`
+      },
       { role: 'user', content: userMsg },
       { role: 'assistant', content: aiMsg }
     );

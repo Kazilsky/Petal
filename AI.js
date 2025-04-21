@@ -1,5 +1,38 @@
 import 'dotenv/config';
 import Memory from './core/memory.js';
+
+class AIActionHandler {
+  constructor() {
+    this.actions = {
+      'file.write': this.handleFileWrite.bind(this),
+      'log': this.handleLog.bind(this),
+      // Другие действия
+    };
+  }
+
+  async handleFileWrite(params) {
+    try {
+      console.log(params)
+      fs.writeFileSync(params.path, params.content);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  handleLog(params) {
+    console.log(`[AI LOG] ${params.message}`);
+    return { success: true };
+  }
+
+  async execute(action, params) {
+    if (!this.actions[action]) {
+      throw new Error(`Unknown action: ${action}`);
+    }
+    return await this.actions[action](params);
+  }
+}
+
 import { MoodEngine } from './core/mood.js';
 
 const moodEngine = new MoodEngine();
@@ -59,6 +92,26 @@ export const ApiNeiro = {
     1. Постоянная память (не полная реализация, на данный момент не работает)
 
     Твоя цель - быть полезным инструментом, а не персонажем. Сохраняй баланс между дружелюбием и профессионализмом.
+    
+    **Системные команды (используй только когда действительно нужно):**
+    Для выполнения действий используй специальный формат:
+    [AI_ACTION:action_name]{"param1":"value1","param2":"value2"}[/AI_ACTION]
+
+    Доступные действия:
+    1. file.write - Запись в файл (только разрешенные пути: /temp/ . /test/)
+      Параметры: {"path":"относительный_путь","content":"текст"}
+
+    2. log - Запись в лог
+      Параметры: {"message":"текст сообщения"}
+
+    Примеры:
+    - "[AI_ACTION:log]{"message":"Пользователь запросил помощь"}[/AI_ACTION]"
+    - "[AI_ACTION:file.write]{"path":"data/log.txt","content":"новая запись"}[/AI_ACTION]"
+
+    **Важно:**
+    1. Используй команды только когда это необходимо для работы
+    2. Все параметры должны быть в валидном JSON
+    3. Не пытайся выполнять запрещенные действия
     `;
 
     // 2. Формирование промпта
@@ -66,6 +119,9 @@ export const ApiNeiro = {
       {
         role: 'system',
         content: `${moodEngine.getMoodPrompt()}\nДолговременная память: ${Memory.permMemory.facts.slice(-3).join('; ')}`
+      },
+      { role: 'system',
+        content: `Текущий номер канала: ${channelId}`
       },
       {
         role: 'system',
@@ -97,7 +153,14 @@ export const ApiNeiro = {
     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
 
     const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    let aiResponse = data.choices[0].message.content;
+
+    // После получения ответа от ИИ:
+    const actionResult = await this.checkForActions(aiResponse);
+    if (actionResult.performed) {
+      // Обновить ответ с результатом выполнения действия
+      aiResponse = actionResult.modifiedResponse || aiResponse;
+    }
 
     // 4. Обновление памяти
     Memory.updateMemory(channelId, message, aiResponse, importance, user.username);
@@ -176,5 +239,34 @@ export const ApiNeiro = {
       console.log(e)
       return 0; // Fallback
     }
+  },
+
+  async checkForActions(response) {
+    // Парсинг специальных команд в ответе ИИ
+    const actionRegex = /\[AI_ACTION:(\w+)\](.*?)\[\/AI_ACTION\]/gs;
+    let modifiedResponse = response;
+    let performed = false;
+
+    let match;
+    while ((match = actionRegex.exec(response)) !== null) {
+      const [fullMatch, action, paramsJson] = match;
+      try {
+        const params = JSON.parse(paramsJson);
+        const result = await actionHandler.execute(action, params);
+        
+        // Заменяем команду в ответе на результат выполнения
+        modifiedResponse = modifiedResponse.replace(
+          fullMatch,
+          `[Выполнено: ${action}] ${result.success ? 'Успешно' : 'Ошибка: ' + (result.error || '')}`
+        );
+        performed = true;
+      } catch (e) {
+        console.error('Action failed:', e);
+      }
+    }
+
+    return { performed, modifiedResponse };
   }
 };
+
+const actionHandler = new AIActionHandler();
