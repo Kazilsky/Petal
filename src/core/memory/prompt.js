@@ -5,7 +5,6 @@ export class MemorySystem {
   constructor() {
     this.tempMemory = []; // { channelId: Message[] }
     this.permMemory = this.loadPermMemory();
-    this.addPrompt = '';
   }
 
   getContext(limit = 100) {
@@ -69,14 +68,6 @@ export class MemorySystem {
       score = Math.min(score + 0.3, 1.0);
     }
     return score;
-  }
-
-  getAddPrompt() {
-    return this.addPrompt;
-  }
-
-  updatePrompt(new_prompt) {
-     this.addPrompt = this.addPrompt + new_prompt
   }
 
   updateMemory(channelId, userMsg, aiMsg, importance, user) {

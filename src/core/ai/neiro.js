@@ -5,7 +5,7 @@ import { AIActionHandler } from './actions.js';
 
 import "dotenv/config";
 
-const memory = new MemorySystem();
+export const memory = new MemorySystem();
 const moodEngine = new MoodEngine();
 const actionHandler = new AIActionHandler();
 
@@ -15,7 +15,7 @@ export class ApiNeiro {
     const importance = 0;
     moodEngine.analyzeText(message);
     
-    const prompt = this.buildPrompt(channelId, user);
+    const prompt = this.buildPrompt();
     const messages = this.buildMessages(prompt, message, channelId, user);
     
     const aiResponse = await this.queryAI(messages);
@@ -78,11 +78,15 @@ export class ApiNeiro {
     1. log - Запись в лог
       Параметры: {"message":"текст сообщения"}
 
-    1. file.write - Запись в файл
+    2. addPrompt - Запись в второстепенный промпт
+       Параметры: {"prompt":"сам_записываемый_промпт","message":"вывод_в_консоль_по_окончанию"}
+
+    3. file.write - Запись в файл
       Параметры: {"path":"путь_файла","content":"его_содержимое"} -- недействительно, в разработке
 
     Примеры:
     - "[AI_ACTION:log]{"message":"Пользователь запросил помощь"}[/AI_ACTION]"
+    - "[AO_ACTION:addPrompt]{"prompt":"Напоминания: Создатель любит красный цвет \n Факты: Создатель знает раст", "message":"prompt_success"}[/AI_ACTION]"
     - "[AI_ACTION:file.write]{"path":"data/log.txt","content":"новая запись"}[/AI_ACTION]" -- недействительно, в разработке
 
     **Важно:**
@@ -93,10 +97,13 @@ export class ApiNeiro {
   }
 
   static buildMessages(prompt, message, channelId, user) {
+	  console.log(memory.getAddPrompt())
     return [
       { role: 'system', content: `Главный промпт: ${this.getSystemMessages(prompt, channelId, user)}`},
+      { role: 'system', content: `Второстепенный промпт: ${JSON.stringify(memory.getAddPrompt())}`},
       { role: 'system', content: `Временная память: ${JSON.stringify(memory.getContext())}` },
-      { role: 'user', content: `${user.username}: ${message}` }
+      { role: 'user', content: `Имя пользователя написавший текущее сообщение: ${user.username}` },
+      { role: 'user', content: `${message}` }
     ];
   }
 
