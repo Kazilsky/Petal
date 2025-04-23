@@ -3,6 +3,7 @@
     "axios": "^1.8.4",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
+    "transformers": "^1.8.3",
     "typescript": "^5.8.3"
   },
   "type": "module",

@@ -23,6 +23,15 @@ export class DiscordBot {
     await this.client.login(process.env.DISCORD_TOKEN);
   }
 
+  private async trySendAutonomousMessage() {
+    try {
+      const response = await ai.generateDream();
+      return response
+    } catch (error) {
+      console.error('GenerateDream error: ', error)
+    }
+  }
+
   private setupHandlers(): void {
     this.client.on('ready', () => {
       console.log(`🦾 ${this.client.user?.tag} запущен!`);
@@ -30,8 +39,9 @@ export class DiscordBot {
 
     this.client.on('messageCreate', async (message: Message) => {
       if (message.author.bot || !this.mentionSystem.isBotMentioned(message.content)) return;
-
+      console.log(this.mentionSystem.isBotMentioned(message.content))
       try {
+        console.log('test')
         const response = await ai.generateResponse({
           message: message.content,
           channelId: message.channelId,
@@ -40,10 +50,22 @@ export class DiscordBot {
 
         await this.sendChunkedResponse(message, response);
       } catch (error) {
-        console.error('Discord error:', error);
+        console.error('Discord error: ', error);
         await message.reply('🔧 Ошибка обработки запроса');
       }
     });
+
+    setInterval(async () => {
+      try {
+        const responce = await this.trySendAutonomousMessage();
+        if (responce == 'test') {
+          this.client.channels.fetch('1185995678653108394')
+            .then(channel => console.log(channel))
+        } 
+      } catch (error) {
+        console.error('Autonomous message error:', error);
+      }
+    }, 60_000); // Каждые 2 минуты
   }
 
   private async sendChunkedResponse(message: Message, text: string): Promise<void> {
