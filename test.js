@@ -1,35 +1,17 @@
-import 'dotenv/config';
+import { InferenceClient } from "@huggingface/inference";
 
-async function generateAIResponse(message) {
-  // 1. Формирование промпта
-  const messages = [
-    { role: 'user', content: message }
-  ];
+const client = new InferenceClient("");
 
-  console.log(process.env.OPENROUTER_API_KEY)
+const chatCompletion = await client.chatCompletion({
+    provider: "nebius",
+    model: "deepseek-ai/DeepSeek-V3-0324",
+    messages: [
+        {
+            role: "user",
+            content: "What is the capital of France?",
+        },
+    ],
+    max_tokens: 512,
+});
 
-  // 2. Запрос к OpenRouter
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'deepseek/deepseek-chat-v3-0324:free',
-      messages,
-      temperature: 0.7,
-      stream: false,
-    })
-  });
-
-  // if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-
-  const data = await response.json();
-  const ret = data.choices[0].message.content;
-  return ret;
-}
-
-const test = await generateAIResponse('Привет')
-
-console.log(test);
+console.log(chatCompletion.choices[0].message);
