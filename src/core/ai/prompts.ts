@@ -1,4 +1,4 @@
-import { MemorySystem } from '../memory/memory';
+import { MemorySystem } from "../memory/memory";
 
 export class PromptSystem {
   private readonly memory: MemorySystem;
@@ -20,7 +20,7 @@ export class PromptSystem {
     ${this.getSpecialCases()}
     `;
   }
-  
+
   /**
    * Промпт для обозначения языка речи
    */
@@ -33,7 +33,7 @@ export class PromptSystem {
     - Английский только при явном запросе: "Answer in English"
     `;
   }
-  
+
   private getCoreIdentity(): string {
     return `
     # Личность
@@ -44,14 +44,14 @@ export class PromptSystem {
     - "Брат-шутка": Фенти/Memble (человек, но в шутку называется ИИ)
     `;
   }
-  
+
   /**
    * Возвращает дополнительный контекст из памяти
    */
   private getContext(): string {
     return `
     Дополнительные инструкции:
-    ${this.memory.getAdditionalPrompt()}
+    ${this.memory.getAdditionalNote()}
     
     Исторический контекст:
     ${JSON.stringify(this.memory.getContext())}
@@ -73,7 +73,7 @@ export class PromptSystem {
       * Отдающие выбор формулировки ("Возможно вы правы.")
     `;
   }
-  
+
   private getTechnicalInstructions(): string {
     return `
     # Технические инструкции
@@ -81,33 +81,45 @@ export class PromptSystem {
     ${this.getMemoryRules()}
     `;
   }
-  
+
   private getActionSystem(): string {
     return `
     ## Система действий
-    Формат: [AI_ACTION:действие]{параметры}[/AI_ACTION]
+    Формат (с новой строки): [AI_ACTION:действие]{параметры}[/AI_ACTION]
   
     Доступные действия:
-    1. log - {"message":"текст"}
-    2. addPrompt - {"prompt":"текст","message":"лог"}
-    3. file.write - {"path":"путь","content":"текст"} [НЕАКТИВНО]
-  
+    log - {"message":"текст"}
+    
+    # Работа с записями
+    noteSet - {"name": "название по которому будет работа с записью", "prompt":"текст", "message":"лог"} [АВТОМАТИЧЕСКИ СОЗДАЕТ НЕ СОЗДАННУЮ ЗАПИСЬ ИЛИ РЕДАКТИРУЮ УЖЕ СДЕЛАННУЮ]
+    noteUnset - {"name": "название записи"} [УБИРАЕТ ЗАПИСЬ ПОЛНОСТЬЮ]
+    
+    # Работа с файлами
+    file.write - {"path":"путь","content":"текст"} [НЕАКТИВНО]
+    
+    # Работа с мыслительным модулем
+    dream.on - {"switch": "on", "message": "причина включения"}
+    dream.off - {"switch": "off", "message": "причина выключения"}
+    dream.tick - {"tick": "частота в секундах"}
+    dream.theme.set - {"prompt": "тема мыслей (задается как промпт)"}
+    dream.theme.unset - {} [КОМАНДЫ НЕ ПЕРЕДАЮТСЯ]
+
     Важно:
     - Только необходимые действия
     - Параметры строго в JSON
     - Запрещённые действия игнорируются
     `;
   }
-  
+
   private getMemoryRules(): string {
     return `
     ## Работа с памятью
     - Постоянная память: в разработке (не использовать)
     - Временная память: последние 200 сообщений
-    - Важные факты сохраняются (addPrompt)
+    - Важные факты сохраняются (setNote)
     `;
   }
-  
+
   private getExamples(): string {
     return `
     # Примеры ответов
@@ -122,7 +134,7 @@ export class PromptSystem {
     - "Я думаю, возможно..."
     `;
   }
-  
+
   private getSpecialCases(): string {
     return `
     # Особые случаи
@@ -142,23 +154,23 @@ export class PromptSystem {
    * Собирает полный контекст для запроса к AI
    */
   public buildMessages(
-    userMessage: string, 
-    channelId: string, 
-    username: string
+    userMessage: string,
+    channelId: string,
+    username: string,
   ): Array<{ role: string; content: string }> {
     return [
-      { 
-        role: 'system', 
-        content: this.getSystemPrompt()
+      {
+        role: "system",
+        content: this.getSystemPrompt(),
       },
-      { 
-        role: 'system', 
-        content: this.getContext()
+      {
+        role: "system",
+        content: this.getContext(),
       },
-      { 
-        role: 'user', 
-        content: `Новое сообщение от ${username} (канал ${channelId}): ${userMessage}`
-      }
+      {
+        role: "user",
+        content: `Новое сообщение от ${username} (канал ${channelId}): ${userMessage}`,
+      },
     ];
   }
 }

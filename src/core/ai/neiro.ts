@@ -1,7 +1,7 @@
-import { MemorySystem } from '../memory/memory';
-import { PromptSystem } from './prompts';
-import { AIActionHandler } from './actions';
-import { AIResponseParams } from '../ai.types';
+import { MemorySystem } from "../memory/memory";
+import { PromptSystem } from "./prompts";
+import { AIActionHandler } from "./actions";
+import { AIResponseParams } from "../ai.types";
 
 import "dotenv/config";
 
@@ -20,28 +20,37 @@ export class ApiNeiro {
     const messages = this.promptSystem.buildMessages(
       params.message,
       params.channelId,
-      params.user.username
+      params.user.username,
     );
 
     const response = await this.queryAI(messages);
     // Заполняем память
-    this.memory.updateMemory(params.channelId, params.message, response, 0, params.user.username)
+    this.memory.updateMemory(
+      params.channelId,
+      params.message,
+      response,
+      0,
+      params.user.username,
+    );
     return this.processResponse(response);
   }
 
   private async queryAI(messages: any[]): Promise<string> {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "deepseek/deepseek-chat-v3-0324:free",
+          messages,
+          temperature: 0.6,
+        }),
       },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3-0324:free',
-        messages,
-        temperature: 0.6
-      })
-    });
+    );
 
     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
     const data = await response.json();
@@ -54,13 +63,20 @@ export class ApiNeiro {
 
     for (const match of response.matchAll(actionRegex)) {
       try {
-        const result = await this.actionHandler.execute(match[1], JSON.parse(match[2]));
-        processedResponse = processedResponse.replace(match[0], `[${match[1]}: ${result.success ? '✓' : '✗'}]`);
+        const result = await this.actionHandler.execute(
+          match[1],
+          JSON.parse(match[2]),
+        );
+        processedResponse = processedResponse.replace(
+          match[0],
+          `[${match[1]}: ${result.success ? "✓" : "✗"}]`,
+        );
       } catch (error) {
-        console.error('Action processing error:', error);
+        console.error("Action processing error:", error);
       }
     }
 
     return processedResponse;
   }
 }
+
