@@ -47,6 +47,12 @@ export class TelegramService {
 
       const chatId = msg.chat.id.toString();
       const username = msg.from?.username || msg.from?.first_name || 'Unknown';
+      
+      // Determine chat type
+      let chatType: 'private' | 'group' | 'channel' | 'supergroup' = 'private';
+      if (msg.chat.type === 'group') chatType = 'group';
+      if (msg.chat.type === 'supergroup') chatType = 'supergroup';
+      if (msg.chat.type === 'channel') chatType = 'channel';
 
       // Add message to thinking buffer (passive reading)
       if (this.thinkingModule) {
@@ -54,8 +60,15 @@ export class TelegramService {
           content: msg.text,
           username: username,
           channelId: chatId,
+          channelName: msg.chat.title || msg.chat.username || username,
           timestamp: Date.now(),
-          platform: 'telegram'
+          platform: 'telegram',
+          metadata: {
+            userId: msg.from?.id.toString(),
+            chatType: chatType,
+            isReply: msg.reply_to_message !== undefined,
+            replyToMessageId: msg.reply_to_message?.message_id.toString()
+          }
         });
       }
 

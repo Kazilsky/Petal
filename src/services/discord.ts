@@ -50,8 +50,17 @@ export class DiscordBot {
           content: message.content,
           username: message.author.username,
           channelId: message.channelId,
+          channelName: message.channel.isDMBased() ? 'DM' : (message.channel as any).name || 'Unknown',
           timestamp: Date.now(),
-          platform: 'discord'
+          platform: 'discord',
+          metadata: {
+            userId: message.author.id,
+            guildId: message.guildId || undefined,
+            guildName: message.guild?.name || undefined,
+            chatType: message.channel.isDMBased() ? 'private' : 'channel',
+            isReply: message.reference !== null,
+            replyToMessageId: message.reference?.messageId
+          }
         });
       }
 

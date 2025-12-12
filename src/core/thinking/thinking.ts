@@ -1,4 +1,4 @@
-import { MemoryMessage, ChatMessage } from '../ai.types';
+import { MemoryMessage, ChatMessage, Platform } from '../ai.types';
 import { Logger } from '../system/logger';
 
 export interface ThinkingContext {
@@ -79,11 +79,52 @@ export class ThinkingModule {
     }
   }
 
-  public getRecentMessages(limit?: number): ChatMessage[] {
-    if (limit) {
-      return this.chatBuffer.slice(-limit);
+  public getRecentMessages(limit?: number, filter?: {
+    platform?: Platform;
+    channelId?: string;
+    username?: string;
+  }): ChatMessage[] {
+    let messages = [...this.chatBuffer];
+
+    // Apply filters
+    if (filter) {
+      if (filter.platform) {
+        messages = messages.filter(msg => msg.platform === filter.platform);
+      }
+      if (filter.channelId) {
+        messages = messages.filter(msg => msg.channelId === filter.channelId);
+      }
+      if (filter.username) {
+        messages = messages.filter(msg => msg.username === filter.username);
+      }
     }
-    return [...this.chatBuffer];
+
+    // Apply limit
+    if (limit) {
+      return messages.slice(-limit);
+    }
+    return messages;
+  }
+
+  public getChannels(): { platform: Platform; channelId: string; channelName?: string; messageCount: number }[] {
+    const channelMap = new Map<string, { platform: Platform; channelId: string; channelName?: string; messageCount: number }>();
+
+    for (const msg of this.chatBuffer) {
+      const key = `${msg.platform}:${msg.channelId}`;
+      const existing = channelMap.get(key);
+      if (existing) {
+        existing.messageCount++;
+      } else {
+        channelMap.set(key, {
+          platform: msg.platform,
+          channelId: msg.channelId,
+          channelName: msg.channelName,
+          messageCount: 1
+        });
+      }
+    }
+
+    return Array.from(channelMap.values());
   }
 
   public clearBuffer(): void {

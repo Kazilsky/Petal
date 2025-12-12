@@ -65,6 +65,14 @@ export class AIActionHandler {
       case "system.listFiles":
         return this.handleSystemListFiles(params);
 
+      // Channel and message queries
+      case "channels.list":
+        return this.handleChannelsList();
+      case "messages.getByChannel":
+        return this.handleMessagesGetByChannel(params);
+      case "messages.getByUser":
+        return this.handleMessagesGetByUser(params);
+
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -227,6 +235,40 @@ export class AIActionHandler {
     }
     const files = this.systemControl.listFiles(params.dir);
     console.log(`[AI SYSTEM] Files in ${params.dir}:`, files);
+    return { success: true };
+  }
+
+  // Channel and message query handlers
+  private handleChannelsList(): { success: boolean } {
+    if (!this.thinkingModule) {
+      throw new Error("Thinking module not initialized");
+    }
+    const channels = this.thinkingModule.getChannels();
+    console.log(`[AI CHANNELS] Found ${channels.length} channels:`, channels);
+    return { success: true };
+  }
+
+  private handleMessagesGetByChannel(params: { channelId: string; platform?: string; limit?: number }): { success: boolean } {
+    if (!this.thinkingModule) {
+      throw new Error("Thinking module not initialized");
+    }
+    const messages = this.thinkingModule.getRecentMessages(params.limit || 20, {
+      channelId: params.channelId,
+      platform: params.platform as any
+    });
+    console.log(`[AI MESSAGES] Retrieved ${messages.length} messages from channel ${params.channelId}`);
+    return { success: true };
+  }
+
+  private handleMessagesGetByUser(params: { username: string; platform?: string; limit?: number }): { success: boolean } {
+    if (!this.thinkingModule) {
+      throw new Error("Thinking module not initialized");
+    }
+    const messages = this.thinkingModule.getRecentMessages(params.limit || 20, {
+      username: params.username,
+      platform: params.platform as any
+    });
+    console.log(`[AI MESSAGES] Retrieved ${messages.length} messages from user ${params.username}`);
     return { success: true };
   }
 }

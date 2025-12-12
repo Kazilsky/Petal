@@ -55,6 +55,27 @@ system.readSource {"path": "core/ai/neiro.ts"}
 system.listFiles {"dir": "core"}
 ```
 
+#### Channel and Message Queries
+```
+channels.list
+messages.getByChannel {"channelId": "123456", "platform": "discord", "limit": 20}
+messages.getByUser {"username": "user", "platform": "telegram", "limit": 10}
+```
+
+### 📊 Channel Awareness
+
+Petal can distinguish between different channels and platforms:
+
+- **Discord**: Tracks guild names, channel names, and channel types (DMs vs channels)
+- **Telegram**: Tracks chat types (private, group, supergroup, channel) and chat names
+- **Cross-platform**: Each message stores platform, channel ID, channel name, and user metadata
+
+AI can query:
+- List all active channels: `channels.list`
+- Get messages from specific channel: `messages.getByChannel`
+- Get messages from specific user: `messages.getByUser`
+- Filter by platform, channel, or user
+
 ## Environment Variables
 
 Create a `.env` file based on `.env.example`:

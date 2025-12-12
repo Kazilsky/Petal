@@ -116,15 +116,21 @@ export class PromptSystem {
     - system.readSource {"path": "core/ai/neiro.ts"} — прочитать свой исходный код.
     - system.listFiles {"dir": "core"} — получить список файлов в директории.
 
+    **Каналы и сообщения:**
+    - channels.list — получить список всех активных каналов (Discord, Telegram).
+    - messages.getByChannel {"channelId": "123", "platform": "discord", "limit": 20} — получить сообщения из канала.
+    - messages.getByUser {"username": "user", "platform": "telegram", "limit": 10} — получить сообщения пользователя.
+
     Пример ПРАВИЛЬНЫЙ:
     [AI_ACTION:noteSet]{"name": "user_bio", "prompt": "Любит кошек", "message": "Добавление заметки о вкусах создателя"}[/AI_ACTION]
     [AI_ACTION:thinking.setInterval]{"minutes": 5}[/AI_ACTION]
     [AI_ACTION:mode.set]{"mode": "ai_decides"}[/AI_ACTION]
+    [AI_ACTION:channels.list]{}[/AI_ACTION]
+    [AI_ACTION:messages.getByChannel]{"channelId": "123456", "platform": "discord", "limit": 10}[/AI_ACTION]
 
     Пример ОШИБОЧНЫЙ (НЕ ДЕЛАТЬ ТАК):
     [AI_ACTION:noteSet]{{"name": "user_bio"}}[/AI_ACTION]
     `;
-  }
 
   private getMemoryRules(): string {
     return `
