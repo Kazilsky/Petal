@@ -1,25 +1,24 @@
-import { Client, GatewayIntentBits, Message } from 'discord.js';
+import TelegramBot from 'node-telegram-bot-api';
 import { ai } from './ai';
 import { MentionSystem } from '../core/memory/mention';
 import { ThinkingModule } from '../core/thinking/thinking';
 import { SystemControl, ResponseMode } from '../core/system/systemControl';
-
 import "dotenv/config";
 
-export class DiscordBot {
-  private readonly client: Client;
+export class TelegramService {
+  private bot: TelegramBot | null = null;
   private readonly mentionSystem = new MentionSystem();
   private thinkingModule: ThinkingModule | null = null;
   private systemControl: SystemControl | null = null;
 
   constructor() {
-    this.client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-      ]
-    });
+    const token = process.env.TELEGRAM_TOKEN;
+    if (!token) {
+      console.warn('⚠️ TELEGRAM_TOKEN not set, Telegram service disabled');
+      return;
+    }
+
+    this.bot = new TelegramBot(token, { polling: true });
     this.setupHandlers();
   }
 
@@ -32,45 +31,52 @@ export class DiscordBot {
   }
 
   public async start(): Promise<void> {
-    await this.client.login(process.env.DISCORD_TOKEN);
+    if (!this.bot) {
+      console.log('❌ Telegram bot not initialized (no token)');
+      return;
+    }
+    console.log('📱 Telegram bot started');
   }
 
   private setupHandlers(): void {
-    this.client.on('ready', () => {
-      console.log(`🦾 ${this.client.user?.tag} запущен!`);
-    });
+    if (!this.bot) return;
 
-    this.client.on('messageCreate', async (message: Message) => {
-      // Ignore bot messages
-      if (message.author.bot) return;
+    this.bot.on('message', async (msg) => {
+      if (!msg.text) return;
+      if (msg.from?.is_bot) return;
+
+      const chatId = msg.chat.id.toString();
+      const username = msg.from?.username || msg.from?.first_name || 'Unknown';
 
       // Add message to thinking buffer (passive reading)
       if (this.thinkingModule) {
         this.thinkingModule.addMessage({
-          content: message.content,
-          username: message.author.username,
-          channelId: message.channelId,
+          content: msg.text,
+          username: username,
+          channelId: chatId,
           timestamp: Date.now(),
-          platform: 'discord'
+          platform: 'telegram'
         });
       }
 
       // Determine if we should respond based on current mode
-      if (!this.shouldRespond(message.content)) {
+      if (!this.shouldRespond(msg.text)) {
         return;
       }
 
       try {
         const response = await ai.generateResponse({
-          message: message.content,
-          channelId: message.channelId,
-          user: message.author
+          message: msg.text,
+          channelId: chatId,
+          user: { username, id: msg.from?.id.toString() }
         });
 
-        await this.sendChunkedResponse(message, response);
+        await this.sendChunkedResponse(chatId, response);
       } catch (error) {
-        console.error('Discord error:', error);
-        await message.reply('🔧 Ошибка обработки запроса');
+        console.error('Telegram error:', error);
+        if (this.bot) {
+          await this.bot.sendMessage(chatId, '🔧 Ошибка обработки запроса');
+        }
       }
     });
   }
@@ -92,17 +98,21 @@ export class DiscordBot {
       
       case 'ai_decides':
       default:
-        // In AI decides mode, we always pass to AI and let it decide
-        // For now, we'll respond to all messages and let AI decide in prompt
-        // In future, could add pre-filter logic here
         return true;
     }
   }
 
-  private async sendChunkedResponse(message: Message, text: string): Promise<void> {
-    const CHUNK_SIZE = 2000;
+  private async sendChunkedResponse(chatId: string, text: string): Promise<void> {
+    if (!this.bot) return;
+
+    const CHUNK_SIZE = 4096; // Telegram message limit
     for (let i = 0; i < text.length; i += CHUNK_SIZE) {
-      await message.reply(text.slice(i, i + CHUNK_SIZE));
+      await this.bot.sendMessage(chatId, text.slice(i, i + CHUNK_SIZE), {
+        parse_mode: 'Markdown'
+      }).catch(() => {
+        // Fallback without markdown if parsing fails
+        return this.bot!.sendMessage(chatId, text.slice(i, i + CHUNK_SIZE));
+      });
     }
   }
 }
