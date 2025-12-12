@@ -61,8 +61,16 @@ export class SystemControl {
   public readSourceFile(filePath: string): string {
     // Security: only allow reading from src/ directory
     const srcDir = path.resolve('./src');
-    const requestedPath = path.resolve(filePath);
+    const normalizedPath = path.normalize(filePath);
+    
+    // Prevent directory traversal
+    if (normalizedPath.includes('..')) {
+      throw new Error('Path traversal not allowed');
+    }
+    
+    const requestedPath = path.join(srcDir, normalizedPath);
 
+    // Double check it's still within src/
     if (!requestedPath.startsWith(srcDir)) {
       throw new Error('Access denied: Can only read files from src/ directory');
     }
@@ -82,8 +90,16 @@ export class SystemControl {
   public listFiles(directory: string): string[] {
     // Security: only allow listing from src/ directory
     const srcDir = path.resolve('./src');
-    const requestedPath = path.resolve(directory);
+    const normalizedPath = path.normalize(directory);
+    
+    // Prevent directory traversal
+    if (normalizedPath.includes('..')) {
+      throw new Error('Path traversal not allowed');
+    }
+    
+    const requestedPath = path.join(srcDir, normalizedPath);
 
+    // Double check it's still within src/
     if (!requestedPath.startsWith(srcDir)) {
       throw new Error('Access denied: Can only list files from src/ directory');
     }

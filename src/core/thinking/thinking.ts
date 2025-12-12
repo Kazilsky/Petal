@@ -1,13 +1,5 @@
-import { MemoryMessage } from '../ai.types';
+import { MemoryMessage, ChatMessage } from '../ai.types';
 import { Logger } from '../system/logger';
-
-export interface ChatMessage {
-  content: string;
-  username: string;
-  channelId: string;
-  timestamp: number;
-  platform: string;
-}
 
 export interface ThinkingContext {
   recentMessages: ChatMessage[];

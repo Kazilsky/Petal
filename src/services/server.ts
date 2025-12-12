@@ -177,10 +177,30 @@ export class HTTPServer {
         return res.status(503).json({ error: 'System control not initialized' });
       }
 
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
-      const level = req.query.level as any;
+      const limitParam = req.query.limit as string | undefined;
+      const levelParam = req.query.level as string | undefined;
 
-      const logs = this.systemControl.getLogger().getLogs(limit, level);
+      // Validate limit parameter
+      let limit: number | undefined;
+      if (limitParam) {
+        const parsedLimit = parseInt(limitParam, 10);
+        if (isNaN(parsedLimit) || parsedLimit < 1 || parsedLimit > 10000) {
+          return res.status(400).json({ 
+            error: 'limit must be a number between 1 and 10000' 
+          });
+        }
+        limit = parsedLimit;
+      }
+
+      // Validate level parameter
+      const validLevels = ['debug', 'info', 'warn', 'error', 'silent'];
+      if (levelParam && !validLevels.includes(levelParam)) {
+        return res.status(400).json({ 
+          error: `level must be one of: ${validLevels.join(', ')}` 
+        });
+      }
+
+      const logs = this.systemControl.getLogger().getLogs(limit, levelParam as any);
       res.json({ logs, count: logs.length });
     });
 
