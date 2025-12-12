@@ -71,25 +71,32 @@ export class ApiNeiro {
   }
 
   private async queryAI(messages: any[]): Promise<string> {
+    // Используем Ollama вместо OpenRouter
+    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaModel = process.env.OLLAMA_MODEL || "qwen2.5:14b";
+    
     const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
+      `${ollamaUrl}/api/chat`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "x-ai/grok-4.1-fast:free", // Или любой другой
+          model: ollamaModel,
           messages,
-          temperature: 0.6,
+          stream: false,
+          options: {
+            temperature: 0.6,
+            num_ctx: 8192, // Контекстное окно
+          }
         }),
       },
     );
 
-    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+    if (!response.ok) throw new Error(`Ollama API Error: ${response.statusText}`);
     const data = await response.json();
-    return data.choices[0].message.content;
+    return data.message.content;
   }
 
   private async processResponse(response: string): Promise<string> {

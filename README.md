@@ -83,12 +83,36 @@ Create a `.env` file based on `.env.example`:
 ```env
 # Required
 DISCORD_TOKEN=your_discord_bot_token
-OPENROUTER_API_KEY=your_openrouter_api_key
+
+# Ollama Configuration (required)
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:14b
 
 # Optional
 TELEGRAM_TOKEN=your_telegram_bot_token
 API_PORT=3000
 API_KEY=optional_api_key_for_server
+```
+
+## Ollama Setup
+
+Petal uses Ollama for local AI inference. See [OLLAMA_SETUP.md](OLLAMA_SETUP.md) for:
+- Installation instructions
+- Recommended models (Qwen2.5:14B recommended)
+- Hardware requirements
+- Cloud hosting options (Vast.ai, RunPod, Lambda Labs)
+- Cost comparison
+
+**Quick Start:**
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pull recommended model
+ollama pull qwen2.5:14b
+
+# Start Ollama
+ollama serve
 ```
 
 ## Installation
