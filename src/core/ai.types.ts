@@ -50,3 +50,21 @@ export interface PermanentMemory {
   keywords: string[];
   facts: string[];
 }
+
+/**
+ * @type Platform
+ * @description Supported platform types
+ */
+export type Platform = 'discord' | 'telegram' | 'http';
+
+/**
+ * @interface ChatMessage
+ * @description Universal chat message across platforms
+ */
+export interface ChatMessage {
+  content: string;
+  username: string;
+  channelId: string;
+  timestamp: number;
+  platform: Platform;
+}

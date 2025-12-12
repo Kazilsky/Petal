@@ -16,6 +16,10 @@ export class ApiNeiro {
     this.actionHandler = new AIActionHandler(this.memory);
   }
 
+  public getMemory(): MemorySystem {
+    return this.memory;
+  }
+
   public async generateResponse(params: AIResponseParams): Promise<string> {
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 
     // что вызывается memory.getContext(), чтобы подтянуть старые факты)

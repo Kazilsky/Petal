@@ -79,13 +79,37 @@ export class PromptSystem {
     Если нужно выполнить команду, используй формат: [AI_ACTION:действие]{json_параметры}[/AI_ACTION]
   
     Доступные действия:
+    
+    **Заметки:**
     - noteSet {"name": "имя", "prompt": "текст", "message": "текст"} — создать/обновить заметку.
     - noteUnset {"name": "имя"} — удалить заметку.
-    - log {"message": "текст"} - отправить сообщение в терминал.
-    - dream.on / dream.off — управление режимом мыслей.
+    
+    **Логирование:**
+    - log {"message": "текст"} — отправить сообщение в терминал.
+    - log.setLevel {"level": "debug|info|warn|error|silent"} — установить уровень логов.
+    - log.enableFile {"enabled": true, "path": "./logs.txt"} — включить/выключить логи в файл.
+    - log.get {"limit": 50, "level": "error"} — получить логи (опционально с фильтром).
+    - log.clear — очистить все логи.
+    
+    **Мыслительный модуль:**
+    - thinking.enable {"enabled": true|false} — включить/выключить модуль мышления.
+    - thinking.setInterval {"minutes": 5} — установить интервал мышления (мин 10 сек, макс 60 мин).
+    - thinking.status — получить статус модуля мышления.
+    
+    **Режимы ответов:**
+    - mode.set {"mode": "ai_decides|mention_only|always_respond"} — установить режим ответа.
+    - mode.get — получить текущий режим ответа.
+    
+    **Системный контроль:**
+    - system.status — получить полный статус системы (память, uptime, конфиг).
+    - system.config {"key": "value"} — изменить конфигурацию системы.
+    - system.readSource {"path": "core/ai/neiro.ts"} — прочитать свой исходный код.
+    - system.listFiles {"dir": "core"} — получить список файлов в директории.
 
     Пример ПРАВИЛЬНЫЙ:
     [AI_ACTION:noteSet]{"name": "user_bio", "prompt": "Любит кошек", "message": "Добавление заметки о вкусах создателя"}[/AI_ACTION]
+    [AI_ACTION:thinking.setInterval]{"minutes": 5}[/AI_ACTION]
+    [AI_ACTION:mode.set]{"mode": "ai_decides"}[/AI_ACTION]
 
     Пример ОШИБОЧНЫЙ (НЕ ДЕЛАТЬ ТАК):
     [AI_ACTION:noteSet]{{"name": "user_bio"}}[/AI_ACTION]
