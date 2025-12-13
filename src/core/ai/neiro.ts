@@ -32,10 +32,16 @@ export class ApiNeiro {
     // 2. Получаем "грязный" ответ от AI (с тегами)
     const rawResponse = await this.queryAI(messages);
 
-    // 3. Извлекаем важность (importance) и очищаем текст
+    // 3. Проверяем, решила ли AI промолчать
+    if (this.shouldNotRespond(rawResponse)) {
+      // AI решила не отвечать - возвращаем пустую строку
+      return '';
+    }
+
+    // 4. Извлекаем важность (importance) и очищаем текст
     const { cleanResponse, importance } = this.extractImportance(rawResponse);
 
-    // 4. Обновляем память с реальной оценкой важности
+    // 5. Обновляем память с реальной оценкой важности
     this.memory.updateMemory(
       params.channelId,
       params.message,
@@ -44,8 +50,19 @@ export class ApiNeiro {
       params.user.username,
     );
 
-    // 5. Обрабатываем действия (actions) и возвращаем итог
+    // 6. Обрабатываем действия (actions) и возвращаем итог
     return this.processResponse(cleanResponse);
+  }
+
+  /**
+   * Проверяет, решила ли AI промолчать
+   */
+  private shouldNotRespond(text: string): boolean {
+    // Проверяем наличие специального тега [NO_RESPONSE] или пустой ответ
+    return text.includes('[NO_RESPONSE]') || 
+           text.trim() === '' || 
+           text.trim() === '(промолчать)' ||
+           text.trim() === '(молчание)';
   }
 
   /**

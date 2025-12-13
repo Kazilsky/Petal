@@ -76,6 +76,11 @@ export class DiscordBot {
           user: message.author
         });
 
+        // If AI decided not to respond (empty string), don't send anything
+        if (!response || response.trim() === '') {
+          return;
+        }
+
         await this.sendChunkedResponse(message, response);
       } catch (error) {
         console.error('Discord error:', error);
@@ -101,9 +106,9 @@ export class DiscordBot {
       
       case 'ai_decides':
       default:
-        // In AI decides mode, only respond if bot is mentioned
-        // AI will decide in prompt whether to give a meaningful response
-        return this.mentionSystem.isBotMentioned(messageContent);
+        // In AI decides mode, pass all messages to AI
+        // AI will autonomously decide whether to respond based on context
+        return true;
     }
   }
 

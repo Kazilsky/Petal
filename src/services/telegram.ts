@@ -84,6 +84,11 @@ export class TelegramService {
           user: { username, id: msg.from?.id.toString() }
         });
 
+        // If AI decided not to respond (empty string), don't send anything
+        if (!response || response.trim() === '') {
+          return;
+        }
+
         await this.sendChunkedResponse(chatId, response);
       } catch (error) {
         console.error('Telegram error:', error);
@@ -111,9 +116,9 @@ export class TelegramService {
       
       case 'ai_decides':
       default:
-        // In AI decides mode, only respond if bot is mentioned
-        // AI will decide in prompt whether to give a meaningful response
-        return this.mentionSystem.isBotMentioned(messageContent);
+        // In AI decides mode, pass all messages to AI
+        // AI will autonomously decide whether to respond based on context
+        return true;
     }
   }
 
