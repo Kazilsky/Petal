@@ -101,10 +101,9 @@ export class DiscordBot {
       
       case 'ai_decides':
       default:
-        // In AI decides mode, we always pass to AI and let it decide
-        // For now, we'll respond to all messages and let AI decide in prompt
-        // In future, could add pre-filter logic here
-        return true;
+        // In AI decides mode, only respond if bot is mentioned
+        // AI will decide in prompt whether to give a meaningful response
+        return this.mentionSystem.isBotMentioned(messageContent);
     }
   }
 

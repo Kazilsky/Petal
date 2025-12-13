@@ -100,7 +100,7 @@ export class ApiNeiro {
   }
 
   private async processResponse(response: string): Promise<string> {
-    const actionRegex = /\[AI_ACTION:(\w+)\](.*?)\[\/AI_ACTION\]/gs;
+    const actionRegex = /\[AI_ACTION:(\w+(?:\.\w+)?)\](.*?)\[\/AI_ACTION\]/gs;
     let processedResponse = response;
 
     // Используем matchAll и итерируемся
@@ -119,19 +119,20 @@ export class ApiNeiro {
           params,
         );
 
-        processedResponse = processedResponse.replace(
-          match[0],
-          `[${actionName}: ${result.success ? "✓" : "✗"}]`,
-        );
+        // Полностью удаляем тег действия из ответа (без замены)
+        processedResponse = processedResponse.replace(match[0], '');
       } catch (error) {
         console.error(`Action error [${actionName}]:`, error);
-        // Можно заменить тег на сообщение об ошибке, чтобы видеть это в чате
-        processedResponse = processedResponse.replace(
-          match[0],
-          `[Error: ${actionName} failed]`
-        );
+        // Удаляем тег даже при ошибке, чтобы не показывать пользователю
+        processedResponse = processedResponse.replace(match[0], '');
       }
     }
+
+    // Убираем лишние пробелы и переносы строк после удаления тегов
+    processedResponse = processedResponse
+      .replace(/\s{2,}/g, ' ') // Множественные пробелы в один
+      .replace(/\n{3,}/g, '\n\n') // Множественные переносы строк
+      .trim();
 
     return processedResponse;
   }

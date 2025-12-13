@@ -111,7 +111,9 @@ export class TelegramService {
       
       case 'ai_decides':
       default:
-        return true;
+        // In AI decides mode, only respond if bot is mentioned
+        // AI will decide in prompt whether to give a meaningful response
+        return this.mentionSystem.isBotMentioned(messageContent);
     }
   }
 
