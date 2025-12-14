@@ -38,6 +38,12 @@ export class DiscordBot {
           user: message.author
         });
 
+        // Если модель решила молчать, не отправляем сообщение
+        if (response === '[NO_RESPONSE]') {
+          console.log(`[SILENCE] Bot chose not to respond to: "${message.content}"`);
+          return;
+        }
+
         await this.sendChunkedResponse(message, response);
       } catch (error) {
         console.error('Discord error:', error);
