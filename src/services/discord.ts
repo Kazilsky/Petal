@@ -35,7 +35,8 @@ export class DiscordBot {
         const response = await ai.generateResponse({
           message: message.content,
           channelId: message.channelId,
-          user: message.author
+          user: message.author,
+          platform: 'discord'
         });
 
         await this.sendChunkedResponse(message, response);

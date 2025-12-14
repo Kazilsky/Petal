@@ -54,7 +54,7 @@ export class AIActionHandler {
 
   private handleNoteUnset(params: { name: string }): { success: boolean } {
     this.memory.unsetNote(params.name);
-    console.log(`[AI NOTE.UNSET] ${params.name} || "Prompt updated"}`);
+    console.log(`[AI NOTE.UNSET] ${params.name} - Note removed`);
     return { success: true };
   }
 

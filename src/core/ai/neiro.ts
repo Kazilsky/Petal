@@ -25,7 +25,7 @@ export class ApiNeiro {
       params.message,
       params.user.username,
       params.channelId,
-      'discord' // Можно расширить для других платформ
+      params.platform || 'discord' // Используем платформу из параметров или discord по умолчанию
     );
 
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 

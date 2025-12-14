@@ -9,11 +9,13 @@
  * @property {string} message - Текст сообщения пользователя
  * @property {string} channelId - ID канала дискорда
  * @property {User} user - Объект пользователя
+ * @property {string} platform - Платформа источника сообщения
  */
 export interface AIResponseParams {
   message: string;
   channelId: string;
   user: User;
+  platform?: 'discord' | 'telegram' | 'api';
 }
 
 /**

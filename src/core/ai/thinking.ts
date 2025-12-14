@@ -26,6 +26,13 @@ export class ThinkingModule {
    */
   public enable(): void {
     if (this.isEnabled) return;
+    
+    // Очищаем существующий интервал если он есть
+    if (this.thinkingInterval) {
+      clearInterval(this.thinkingInterval);
+      this.thinkingInterval = null;
+    }
+    
     this.isEnabled = true;
     console.log('[THINKING] Dream mode enabled');
   }
