@@ -2,6 +2,12 @@ import "dotenv/config";
 
 export type ModelType = 'main' | 'thinking' | 'quick';
 
+export interface OllamaMessage {
+  role: string;
+  content: string;
+  username?: string;
+}
+
 export class OllamaClient {
   private readonly baseUrl: string;
   private readonly token: string;
@@ -18,18 +24,24 @@ export class OllamaClient {
   }
 
   public async query(
-    messages: any[], 
+    messages: OllamaMessage[], 
     modelType: ModelType = 'main',
     options?: { temperature?: number; num_ctx?: number }
   ): Promise<string> {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    
+    // Only add Authorization header if token is provided
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
+    }
+
     const response = await fetch(
       `${this.baseUrl}/api/chat`,
       {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${this.token}`,
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           model: this.models[modelType],
           messages,
@@ -42,8 +54,18 @@ export class OllamaClient {
       },
     );
 
-    if (!response.ok) throw new Error(`Ollama API Error: ${response.statusText}`);
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '');
+      throw new Error(`Ollama API Error: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
+    }
+    
     const data = await response.json();
+    
+    // Validate response structure
+    if (!data || !data.message || typeof data.message.content !== 'string') {
+      throw new Error(`Invalid Ollama API response structure: ${JSON.stringify(data)}`);
+    }
+    
     return data.message.content;
   }
 
