@@ -16,6 +16,10 @@ export class ThinkingModule {
   private readonly thinkingIntervalMs: number;
   private readonly startTime: number;
 
+  /**
+   * Создает новый экземпляр модуля мышления
+   * @param thinkingIntervalMs - Интервал между циклами мышления в миллисекундах (по умолчанию 300000 = 5 минут)
+   */
   constructor(thinkingIntervalMs: number = 300000) {
     this.thinkingIntervalMs = thinkingIntervalMs;
     this.startTime = Date.now();
@@ -23,6 +27,8 @@ export class ThinkingModule {
 
   /**
    * Включает режим мышления
+   * @note В текущей версии только устанавливает флаг enabled.
+   * Автоматический интервал мышления будет реализован в будущей версии.
    */
   public enable(): void {
     if (this.isEnabled) return;
@@ -35,6 +41,9 @@ export class ThinkingModule {
     
     this.isEnabled = true;
     console.log('[THINKING] Dream mode enabled');
+    
+    // TODO: Реализовать автоматический интервал мышления
+    // this.thinkingInterval = setInterval(() => this.performThinking(), this.thinkingIntervalMs);
   }
 
   /**
@@ -99,6 +108,9 @@ export class ThinkingModule {
 
   /**
    * Возвращает относительное время (например "2 мин назад")
+   * @param timestamp - Временная метка Unix (миллисекунды)
+   * @returns Строка с относительным временем на русском языке
+   * @public Метод доступен публично для использования в других модулях
    */
   public getRelativeTime(timestamp: number): string {
     const now = Date.now();
