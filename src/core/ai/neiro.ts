@@ -2,6 +2,7 @@ import { MemorySystem } from "../memory/memory";
 import { PromptSystem } from "./prompts";
 import { AIActionHandler } from "./actions";
 import { AIResponseParams } from "../ai.types";
+import { ollamaClient } from "./ollamaClient";
 
 import "dotenv/config";
 
@@ -67,25 +68,7 @@ export class ApiNeiro {
   }
 
   private async queryAI(messages: any[]): Promise<string> {
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "x-ai/grok-4.1-fast:free", // Или любой другой
-          messages,
-          temperature: 0.6,
-        }),
-      },
-    );
-
-    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-    const data = await response.json();
-    return data.choices[0].message.content;
+    return ollamaClient.query(messages, 'main');
   }
 
   private async processResponse(response: string): Promise<string> {
