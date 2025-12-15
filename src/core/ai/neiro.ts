@@ -81,14 +81,15 @@ export class ApiNeiro {
    * Проверяет, решила ли AI промолчать
    */
   private shouldNotRespond(text: string): boolean {
-    const normalized = text.trim().toLowerCase();
+    const trimmed = text.trim();
+    const normalized = trimmed.toLowerCase();
     return text.includes('[NO_RESPONSE]') || 
            text.includes('(NO_RESPONSE)') ||
            normalized === '[no_response]' ||
            normalized === '(no_response)' ||
-           text.trim() === '' || 
-           text.trim() === '(промолчать)' ||
-           text.trim() === '(молчание)';
+           trimmed === '' || 
+           trimmed === '(промолчать)' ||
+           trimmed === '(молчание)';
   }
 
   /**
