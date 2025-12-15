@@ -44,10 +44,9 @@ export class ApiNeiro {
     // 2. Получаем "грязный" ответ от AI (с тегами)
     const rawResponse = await this.queryAI(messages);
 
-    // 3. Проверяем, решила ли AI промолчать
-    if (this.shouldNotRespond(rawResponse)) {
-      // AI решила не отвечать - возвращаем пустую строку
-      return '';
+    // 3. Проверяем на [NO_RESPONSE] - если модель решила молчать
+    if (rawResponse.trim().includes('[NO_RESPONSE]')) {
+      return '[NO_RESPONSE]';
     }
 
     // 4. Извлекаем важность (importance) и очищаем текст

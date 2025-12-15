@@ -77,8 +77,9 @@ export class DiscordBot {
           platform: 'discord'
         });
 
-        // If AI decided not to respond (empty string), don't send anything
-        if (!response || response.trim() === '') {
+        // Если модель решила молчать, не отправляем сообщение
+        if (response === '[NO_RESPONSE]') {
+          console.log(`[SILENCE] Bot chose not to respond to: "${message.content}"`);
           return;
         }
 
