@@ -1,6 +1,9 @@
 # Node JS
 node_modules/
 
+# Test files
+test_*.ts
+
 # Environments
 .env
 .venv

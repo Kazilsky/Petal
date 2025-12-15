@@ -1,6 +1,7 @@
 import { MemorySystem } from "../memory/memory";
 import { PromptSystem } from "./prompts";
 import { AIActionHandler } from "./actions";
+import { ThinkingModule } from "./thinking";
 import { AIResponseParams } from "../ai.types";
 
 import "dotenv/config";
@@ -9,11 +10,13 @@ export class ApiNeiro {
   private readonly promptSystem: PromptSystem;
   private readonly actionHandler: AIActionHandler;
   private readonly memory: MemorySystem;
+  private readonly thinking: ThinkingModule;
 
   constructor() {
     this.memory = new MemorySystem();
+    this.thinking = new ThinkingModule();
     this.promptSystem = new PromptSystem(this.memory);
-    this.actionHandler = new AIActionHandler(this.memory);
+    this.actionHandler = new AIActionHandler(this.memory, this.thinking);
   }
 
   public getMemory(): MemorySystem {
@@ -21,6 +24,14 @@ export class ApiNeiro {
   }
 
   public async generateResponse(params: AIResponseParams): Promise<string> {
+    // Добавляем сообщение в буфер мыслительного модуля
+    this.thinking.addMessage(
+      params.message,
+      params.user.username,
+      params.channelId,
+      params.platform || 'discord' // Используем платформу из параметров или discord по умолчанию
+    );
+
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 
     // что вызывается memory.getContext(), чтобы подтянуть старые факты)
     const messages = this.promptSystem.buildMessages(
@@ -192,5 +203,12 @@ export class ApiNeiro {
         return {};
       }
     }
+  }
+
+  /**
+   * Возвращает модуль мышления
+   */
+  public getThinkingModule(): ThinkingModule {
+    return this.thinking;
   }
 }
