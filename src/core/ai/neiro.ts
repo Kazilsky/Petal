@@ -1,7 +1,9 @@
 import { MemorySystem } from "../memory/memory";
 import { PromptSystem } from "./prompts";
 import { AIActionHandler } from "./actions";
+import { ThinkingModule } from "./thinking";
 import { AIResponseParams } from "../ai.types";
+import { ollamaClient } from "./ollamaClient";
 
 import "dotenv/config";
 
@@ -9,14 +11,28 @@ export class ApiNeiro {
   private readonly promptSystem: PromptSystem;
   private readonly actionHandler: AIActionHandler;
   private readonly memory: MemorySystem;
+  private readonly thinking: ThinkingModule;
 
   constructor() {
     this.memory = new MemorySystem();
+    this.thinking = new ThinkingModule();
     this.promptSystem = new PromptSystem(this.memory);
-    this.actionHandler = new AIActionHandler(this.memory);
+    this.actionHandler = new AIActionHandler(this.memory, this.thinking);
+  }
+
+  public getMemory(): MemorySystem {
+    return this.memory;
   }
 
   public async generateResponse(params: AIResponseParams): Promise<string> {
+    // Добавляем сообщение в буфер мыслительного модуля
+    this.thinking.addMessage(
+      params.message,
+      params.user.username,
+      params.channelId,
+      params.platform || 'discord' // Используем платформу из параметров или discord по умолчанию
+    );
+
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 
     // что вызывается memory.getContext(), чтобы подтянуть старые факты)
     const messages = this.promptSystem.buildMessages(
@@ -50,6 +66,17 @@ export class ApiNeiro {
   }
 
   /**
+   * Проверяет, решила ли AI промолчать
+   */
+  private shouldNotRespond(text: string): boolean {
+    // Проверяем наличие специального тега [NO_RESPONSE] или пустой ответ
+    return text.includes('[NO_RESPONSE]') || 
+           text.trim() === '' || 
+           text.trim() === '(промолчать)' ||
+           text.trim() === '(молчание)';
+  }
+
+  /**
    * Парсит ответ на наличие тега [MEMORY:0.0-1.0]
    */
   private extractImportance(text: string): { cleanResponse: string; importance: number } {
@@ -72,29 +99,11 @@ export class ApiNeiro {
   }
 
   private async queryAI(messages: any[]): Promise<string> {
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "x-ai/grok-4.1-fast:free", // Или любой другой
-          messages,
-          temperature: 0.6,
-        }),
-      },
-    );
-
-    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-    const data = await response.json();
-    return data.choices[0].message.content;
+    return ollamaClient.query(messages, 'main');
   }
 
   private async processResponse(response: string): Promise<string> {
-    const actionRegex = /\[AI_ACTION:(\w+)\](.*?)\[\/AI_ACTION\]/gs;
+    const actionRegex = /\[AI_ACTION:(\w+(?:\.\w+)?)\](.*?)\[\/AI_ACTION\]/gs;
     let processedResponse = response;
 
     // Используем matchAll и итерируемся
@@ -113,19 +122,20 @@ export class ApiNeiro {
           params,
         );
 
-        processedResponse = processedResponse.replace(
-          match[0],
-          `[${actionName}: ${result.success ? "✓" : "✗"}]`,
-        );
+        // Полностью удаляем тег действия из ответа (без замены)
+        processedResponse = processedResponse.replace(match[0], '');
       } catch (error) {
         console.error(`Action error [${actionName}]:`, error);
-        // Можно заменить тег на сообщение об ошибке, чтобы видеть это в чате
-        processedResponse = processedResponse.replace(
-          match[0],
-          `[Error: ${actionName} failed]`
-        );
+        // Удаляем тег даже при ошибке, чтобы не показывать пользователю
+        processedResponse = processedResponse.replace(match[0], '');
       }
     }
+
+    // Убираем лишние пробелы и переносы строк после удаления тегов
+    processedResponse = processedResponse
+      .replace(/\s{2,}/g, ' ') // Множественные пробелы в один
+      .replace(/\n{3,}/g, '\n\n') // Множественные переносы строк
+      .trim();
 
     return processedResponse;
   }
@@ -168,5 +178,12 @@ export class ApiNeiro {
         return {};
       }
     }
+  }
+
+  /**
+   * Возвращает модуль мышления
+   */
+  public getThinkingModule(): ThinkingModule {
+    return this.thinking;
   }
 }

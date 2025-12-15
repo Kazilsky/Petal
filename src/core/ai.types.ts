@@ -9,11 +9,13 @@
  * @property {string} message - Текст сообщения пользователя
  * @property {string} channelId - ID канала дискорда
  * @property {User} user - Объект пользователя
+ * @property {string} platform - Платформа источника сообщения
  */
 export interface AIResponseParams {
   message: string;
   channelId: string;
   user: User;
+  platform?: 'discord' | 'telegram' | 'api';
 }
 
 /**
@@ -49,4 +51,49 @@ export interface MemoryMessage {
 export interface PermanentMemory {
   keywords: string[];
   facts: string[];
+}
+
+/**
+ * @interface ChatMessage
+ * @description Сообщение в буфере чата с временными метками
+ */
+export interface ChatMessage {
+  content: string;
+  username: string;
+  channelId: string;
+  platform: 'discord' | 'telegram' | 'api';
+  timestamp: number;
+  formattedTime: string;    // "14:35:22"
+  relativeTime: string;     // "2 мин назад"
+}
+
+/**
+ * @interface ChatStats
+ * @description Статистика чата для мыслительного модуля
+ */
+export interface ChatStats {
+  totalMessagesLastHour: number;
+  totalMessagesLast5Min: number;
+  activeUsers: string[];
+  lastMessageTime: number;
+  silenceDuration: number;        // сколько секунд тишины
+  averageMessageInterval: number; // средний интервал между сообщениями
+  platformBreakdown: {
+    discord: number;
+    telegram: number;
+    api: number;
+  };
+}
+
+/**
+ * @interface SystemStatus
+ * @description Статус системы для мыслительного модуля
+ */
+export interface SystemStatus {
+  uptime: number;
+  logsCount: number;
+  config: {
+    responseMode: string;
+    thinkingIntervalMs: number;
+  };
 }

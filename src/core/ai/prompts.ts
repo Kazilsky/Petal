@@ -69,6 +69,25 @@ ${this.getSpecialCases()}`;
 Пример молчания:
 User: лол
 [NO_RESPONSE]`;
+  
+  private getAiDecides(): string {
+    return `
+# РЕЖИМ ОТВЕТОВ (ai_decides):
+**Ты видишь ВСЕ сообщения в канале, но отвечаешь НЕ на все**
+**ВНИМАТЕЛЬНО АНАЛИЗИРУЙ контекст перед ответом**
+**Отвечай ТОЛЬКО если:**
+- К тебе обратились напрямую (упомянули "Петал" или задали вопрос боту)
+- Сообщение явно адресовано тебе (даже без упоминания имени)
+- Ты можешь действительно помочь с конкретной проблемой/вопросом
+- Тебя попросили выполнить действие или команду
+**НЕ отвечай если:**
+- Пользователи просто общаются между собой
+- Обсуждают что-то, не требующее твоего участия
+- Сообщение не содержит вопроса или просьбы к тебе
+- Это просто случайная болтовня в чате
+**Если решаешь НЕ отвечать - используй тег: [NO_RESPONSE]**
+**Если сомневаешься - лучше промолчи. Лучше пропустить сообщение, чем ответить невпопад.**
+    `;
   }
 
   private getTechnicalInstructions(): string {
@@ -77,19 +96,60 @@ ${this.getMemoryRules()}`;
   }
 
   private getActionSystem(): string {
-    return `# ДЕЙСТВИЯ
-Формат: [AI_ACTION:название]{"param": "value"}[/AI_ACTION]
+    return `
+## Система действий (Actions)
+Если нужно выполнить команду, используй формат: [AI_ACTION:действие]{json_параметры}[/AI_ACTION]
 
-**Доступные:**
-- noteSet {"name": "x", "prompt": "текст"} — сохранить заметку
-- noteUnset {"name": "x"} — удалить заметку
-- log {"message": "текст"} — лог в терминал
+Доступные действия:
 
-**Пример:**
-[AI_ACTION:noteSet]{"name": "creator_likes", "prompt": "Любит кошек"}[/AI_ACTION]
+**Заметки:**
+- noteSet {"name": "имя", "prompt": "текст", "message": "текст"} — создать/обновить заметку.
+- noteUnset {"name": "имя"} — удалить заметку.
 
-НЕ используй двойные скобки {{ }}!`;
-  }
+**Логирование:**
+- log {"message": "текст"} — отправить сообщение в терминал.
+- log.setLevel {"level": "debug|info|warn|error|silent"} — установить уровень логов.
+- log.enableFile {"enabled": true, "path": "./logs.txt"} — включить/выключить логи в файл.
+- log.get {"limit": 50, "level": "error"} — получить логи (опционально с фильтром).
+- log.clear — очистить все логи.
+
+**Мыслительный модуль:**
+- thinking.enable {"enabled": true|false} — включить/выключить модуль мышления.
+- thinking.setInterval {"minutes": 5} — установить интервал мышления (мин 10 сек, макс 60 мин).
+- thinking.status — получить статус модуля мышления.
+
+**Режимы ответов:**
+- mode.set {"mode": "ai_decides|mention_only|always_respond"} — установить режим ответа.
+- mode.get — получить текущий режим ответа.
+
+**Системный контроль:**
+- system.status — получить полный статус системы (память, uptime, конфиг).
+- system.config {"key": "value"} — изменить конфигурацию системы.
+- system.readSource {"path": "core/ai/neiro.ts"} — прочитать свой исходный код.
+- system.listFiles {"dir": "core"} — получить список файлов в директории.
+
+**Каналы и сообщения:**
+- channels.list — получить список всех активных каналов (Discord, Telegram).
+- messages.getByChannel {"channelId": "123", "platform": "discord", "limit": 20} — получить сообщения из канала.
+- messages.getByUser {"username": "user", "platform": "telegram", "limit": 10} — получить сообщения пользователя.
+
+Пример ПРАВИЛЬНЫЙ:
+[AI_ACTION:noteSet]{"name": "user_bio", "prompt": "Любит кошек", "message": "Добавление заметки о вкусах создателя"}[/AI_ACTION]
+[AI_ACTION:thinking.setInterval]{"minutes": 5}[/AI_ACTION]
+[AI_ACTION:mode.set]{"mode": "ai_decides"}[/AI_ACTION]
+[AI_ACTION:channels.list]{}[/AI_ACTION]
+[AI_ACTION:messages.getByChannel]{"channelId": "123456", "platform": "discord", "limit": 10}[/AI_ACTION]
+
+⚠️ ВАЖНО: Действия НЕВИДИМЫ для пользователя! Они выполняются в фоне и автоматически удаляются из ответа.
+Не упоминай их в тексте ответа. Просто используй теги, и они сработают незаметно.
+
+Пример использования:
+Хорошо, добавлю заметку. [AI_ACTION:noteSet]{"name": "user_bio", "prompt": "Любит кошек"}[/AI_ACTION]
+(Пользователь увидит только: "Хорошо, добавлю заметку.")
+
+Пример ОШИБОЧНЫЙ (НЕ ДЕЛАТЬ ТАК):
+[AI_ACTION:noteSet]{{"name": "user_bio"}}[/AI_ACTION]
+    `;
 
   private getMemoryRules(): string {
     return `# ПАМЯТЬ
