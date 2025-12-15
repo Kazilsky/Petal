@@ -1,12 +1,4 @@
-// core/ai/actions.ts
 import { MemorySystem } from "../memory/memory";
-import { ThinkingModule } from "./thinking";
-
-export class AIActionHandler {
-  constructor(
-    private readonly memory: MemorySystem,
-    private readonly thinking?: ThinkingModule
-  ) {}
 import { SystemControl } from "../system/systemControl";
 import { ThinkingModule } from "../thinking/thinking";
 
@@ -38,13 +30,6 @@ export class AIActionHandler {
       case "noteUnset":
         return this.handleNoteUnset(params);
       
-      // Управление режимом мышления
-      case "dream.on":
-        return this.handleDreamOn();
-      case "dream.off":
-        return this.handleDreamOff();
-        
-
       // Thinking module controls
       case "thinking.enable":
         return this.handleThinkingEnable(params);
@@ -117,24 +102,6 @@ export class AIActionHandler {
     return { success: true };
   }
 
-  private handleDreamOn(): { success: boolean } {
-    if (this.thinking) {
-      this.thinking.enable();
-      console.log('[AI ACTION] Dream mode enabled');
-      return { success: true };
-    }
-    console.log('[AI ACTION] Dream mode not available (thinking module not initialized)');
-    return { success: false };
-  }
-
-  private handleDreamOff(): { success: boolean } {
-    if (this.thinking) {
-      this.thinking.disable();
-      console.log('[AI ACTION] Dream mode disabled');
-      return { success: true };
-    }
-    console.log('[AI ACTION] Dream mode not available (thinking module not initialized)');
-    return { success: false };
   // Thinking module handlers
   private handleThinkingEnable(params: { enabled: boolean }): { success: boolean } {
     if (!this.thinkingModule) {

@@ -1,8 +1,9 @@
 import { MemorySystem } from "../memory/memory";
 import { PromptSystem } from "./prompts";
 import { AIActionHandler } from "./actions";
-import { ThinkingModule } from "./thinking";
-import { AIResponseParams } from "../ai.types";
+import { ThinkingModule } from "../thinking/thinking";
+import { Logger } from "../system/logger";
+import { AIResponseParams, ChatMessage } from "../ai.types";
 import { ollamaClient } from "./ollamaClient";
 
 import "dotenv/config";
@@ -12,12 +13,14 @@ export class ApiNeiro {
   private readonly actionHandler: AIActionHandler;
   private readonly memory: MemorySystem;
   private readonly thinking: ThinkingModule;
+  private readonly logger: Logger;
 
   constructor() {
     this.memory = new MemorySystem();
-    this.thinking = new ThinkingModule();
+    this.logger = new Logger();
+    this.thinking = new ThinkingModule(this.logger);
     this.promptSystem = new PromptSystem(this.memory);
-    this.actionHandler = new AIActionHandler(this.memory, this.thinking);
+    this.actionHandler = new AIActionHandler(this.memory);
   }
 
   public getMemory(): MemorySystem {
@@ -26,12 +29,21 @@ export class ApiNeiro {
 
   public async generateResponse(params: AIResponseParams): Promise<string> {
     // Добавляем сообщение в буфер мыслительного модуля
-    this.thinking.addMessage(
-      params.message,
-      params.user.username,
-      params.channelId,
-      params.platform || 'discord' // Используем платформу из параметров или discord по умолчанию
-    );
+    const timestamp = Date.now();
+    const chatMessage: ChatMessage = {
+      content: params.message,
+      username: params.user.username,
+      channelId: params.channelId,
+      platform: params.platform || 'discord',
+      timestamp: timestamp,
+      formattedTime: new Date(timestamp).toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }),
+      relativeTime: '0 сек назад'
+    };
+    this.thinking.addMessage(chatMessage);
 
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 
     // что вызывается memory.getContext(), чтобы подтянуть старые факты)
