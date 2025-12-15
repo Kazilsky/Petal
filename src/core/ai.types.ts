@@ -4,18 +4,24 @@
  */
 
 /**
+ * @type Platform
+ * @description Поддерживаемые платформы
+ */
+export type Platform = 'discord' | 'telegram' | 'api';
+
+/**
  * @interface AIResponseParams
  * @description Параметры для генерации AI ответа
  * @property {string} message - Текст сообщения пользователя
  * @property {string} channelId - ID канала дискорда
  * @property {User} user - Объект пользователя
- * @property {string} platform - Платформа источника сообщения
+ * @property {Platform} platform - Платформа источника сообщения
  */
 export interface AIResponseParams {
   message: string;
   channelId: string;
   user: User;
-  platform?: 'discord' | 'telegram' | 'api';
+  platform?: Platform;
 }
 
 /**
@@ -61,10 +67,19 @@ export interface ChatMessage {
   content: string;
   username: string;
   channelId: string;
-  platform: 'discord' | 'telegram' | 'api';
+  channelName?: string;
+  platform: Platform;
   timestamp: number;
-  formattedTime: string;    // "14:35:22"
-  relativeTime: string;     // "2 мин назад"
+  formattedTime?: string;    // "14:35:22"
+  relativeTime?: string;     // "2 мин назад"
+  metadata?: {
+    userId?: string;
+    guildId?: string;
+    guildName?: string;
+    chatType?: string;
+    isReply?: boolean;
+    replyToMessageId?: string;
+  };
 }
 
 /**
