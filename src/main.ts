@@ -1,5 +1,5 @@
 import { DiscordBot } from './services/discord';
-import { TelegramService } from './services/telegram';
+//import { TelegramService } from './services/telegram';
 import { HTTPServer } from './services/server';
 import { ThinkingModule } from './core/thinking/thinking';
 import { SystemControl } from './core/system/systemControl';
@@ -45,15 +45,15 @@ if (actionHandler) {
 
 // Initialize services
 const discordBot = new DiscordBot();
-const telegramService = new TelegramService();
+//const telegramService = new TelegramService();
 const httpServer = new HTTPServer();
 
 // Inject dependencies into services
 discordBot.setThinkingModule(thinkingModule);
 discordBot.setSystemControl(systemControl);
 
-telegramService.setThinkingModule(thinkingModule);
-telegramService.setSystemControl(systemControl);
+//telegramService.setThinkingModule(thinkingModule);
+//telegramService.setSystemControl(systemControl);
 
 httpServer.setThinkingModule(thinkingModule);
 httpServer.setSystemControl(systemControl);
@@ -71,7 +71,7 @@ async function startServices() {
     await discordBot.start();
 
     // Start Telegram bot
-    await telegramService.start();
+    //await telegramService.start();
 
     // Start HTTP server
     await httpServer.start();

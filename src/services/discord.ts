@@ -77,11 +77,14 @@ export class DiscordBot {
           platform: 'discord'
         });
 
-        // Если модель решила молчать, не отправляем сообщение
-        if (response === '[NO_RESPONSE]') {
-          console.log(`[SILENCE] Bot chose not to respond to: "${message.content}"`);
-          return;
-        }
+        // Не отправляй мусор!
+	if (!response || 
+	    response.trim() === '' ||
+	    response.trim().length < 2 ||
+	    response. includes('[NO_RESPONSE]')) {
+	  console.log('[SILENCE] Skipped');
+	  return;
+	}
 
         await this.sendChunkedResponse(message, response);
       } catch (error) {
