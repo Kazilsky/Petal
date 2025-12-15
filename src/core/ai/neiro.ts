@@ -74,7 +74,14 @@ export class ApiNeiro {
     );
 
     // 6. Обрабатываем действия (actions) и возвращаем итог
-    return this.processResponse(cleanResponse);
+    const finalResponse = await this.processResponse(cleanResponse);
+    
+    // 7. Если после обработки остался пустой ответ - считаем это молчанием
+    if (finalResponse.trim() === '') {
+      return '[NO_RESPONSE]';
+    }
+    
+    return finalResponse;
   }
 
   /**
