@@ -9,3 +9,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+# System config and logs
+system_config.json
+logs.txt
+*.log

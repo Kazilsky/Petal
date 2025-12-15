@@ -50,3 +50,30 @@ export interface PermanentMemory {
   keywords: string[];
   facts: string[];
 }
+
+/**
+ * @type Platform
+ * @description Supported platform types
+ */
+export type Platform = 'discord' | 'telegram' | 'http';
+
+/**
+ * @interface ChatMessage
+ * @description Universal chat message across platforms
+ */
+export interface ChatMessage {
+  content: string;
+  username: string;
+  channelId: string;
+  channelName?: string;
+  timestamp: number;
+  platform: Platform;
+  metadata?: {
+    userId?: string;
+    guildId?: string;
+    guildName?: string;
+    chatType?: 'private' | 'group' | 'channel' | 'supergroup';
+    isReply?: boolean;
+    replyToMessageId?: string;
+  };
+}
