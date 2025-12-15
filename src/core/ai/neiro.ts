@@ -3,6 +3,7 @@ import { PromptSystem } from "./prompts";
 import { AIActionHandler } from "./actions";
 import { ThinkingModule } from "./thinking";
 import { AIResponseParams } from "../ai.types";
+import { ollamaClient } from "./ollamaClient";
 
 import "dotenv/config";
 
@@ -99,32 +100,7 @@ export class ApiNeiro {
   }
 
   private async queryAI(messages: any[]): Promise<string> {
-    // Используем Ollama вместо OpenRouter
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
-    const ollamaModel = process.env.OLLAMA_MODEL || "qwen2.5:14b";
-    
-    const response = await fetch(
-      `${ollamaUrl}/api/chat`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: ollamaModel,
-          messages,
-          stream: false,
-          options: {
-            temperature: 0.6,
-            num_ctx: 8192, // Контекстное окно
-          }
-        }),
-      },
-    );
-
-    if (!response.ok) throw new Error(`Ollama API Error: ${response.statusText}`);
-    const data = await response.json();
-    return data.message.content;
+    return ollamaClient.query(messages, 'main');
   }
 
   private async processResponse(response: string): Promise<string> {
