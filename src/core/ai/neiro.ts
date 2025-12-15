@@ -57,7 +57,7 @@ export class ApiNeiro {
     const rawResponse = await this.queryAI(messages);
 
     // 3. Проверяем на [NO_RESPONSE] - если модель решила молчать
-    if (rawResponse.trim().includes('[NO_RESPONSE]')) {
+    if (this.shouldNotRespond(rawResponse)) {
       return '[NO_RESPONSE]';
     }
 
@@ -74,18 +74,29 @@ export class ApiNeiro {
     );
 
     // 6. Обрабатываем действия (actions) и возвращаем итог
-    return this.processResponse(cleanResponse);
+    const finalResponse = await this.processResponse(cleanResponse);
+    
+    // 7. Если после обработки остался пустой ответ - считаем это молчанием
+    if (finalResponse.trim() === '') {
+      return '[NO_RESPONSE]';
+    }
+    
+    return finalResponse;
   }
 
   /**
    * Проверяет, решила ли AI промолчать
    */
   private shouldNotRespond(text: string): boolean {
-    // Проверяем наличие специального тега [NO_RESPONSE] или пустой ответ
+    const trimmed = text.trim();
+    const normalized = trimmed.toLowerCase();
     return text.includes('[NO_RESPONSE]') || 
-           text.trim() === '' || 
-           text.trim() === '(промолчать)' ||
-           text.trim() === '(молчание)';
+           text.includes('(NO_RESPONSE)') ||
+           normalized === '[no_response]' ||
+           normalized === '(no_response)' ||
+           trimmed === '' || 
+           trimmed === '(промолчать)' ||
+           trimmed === '(молчание)';
   }
 
   /**
