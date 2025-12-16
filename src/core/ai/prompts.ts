@@ -110,6 +110,8 @@ ${this.getMemoryRules()}`;
 **Доступные:**
 - noteSet {"name": "x", "prompt": "текст"} — сохранить заметку
 - noteUnset {"name": "x"} — удалить заметку
+- ignoreUser {"username": "x"} — игнорировать пользователя
+- unignoreUser {"username": "x"} — перестать игнорировать
 - log {"message": "текст"} — лог в терминал
 
 НЕ используй двойные скобки {{ }}!`;

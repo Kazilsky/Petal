@@ -45,6 +45,24 @@ export class ApiNeiro {
     };
     this.thinking.addMessage(chatMessage);
 
+    // QuickCheck - проверяем, нужно ли отвечать
+    // Получаем последние сообщения для контекста
+    const recentHistory = this.memory.getRecentMessages(5);
+    
+    // Получаем игнор-лист
+    const ignoredUsers = this.memory.getIgnoredUsers();
+    
+    const shouldRespond = await ollamaClient.quickCheck(
+      params.message,
+      params.user.username,
+      recentHistory,
+      ignoredUsers
+    );
+    
+    if (!shouldRespond) {
+      return '[NO_RESPONSE]';
+    }
+
     // 1. Строим сообщения (внутри promptSystem нужно убедиться, 
     // что вызывается memory.getContext(), чтобы подтянуть старые факты)
     const messages = this.promptSystem.buildMessages(

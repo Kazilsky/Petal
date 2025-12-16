@@ -2,6 +2,12 @@ import "dotenv/config";
 
 export type ModelType = 'main' | 'thinking' | 'quick';
 
+// Garbage message patterns that should be immediately rejected
+const GARBAGE_PATTERNS = /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i;
+
+// Bot mention patterns
+const MENTION_PATTERNS = /петал|petal|бот/i;
+
 export interface OllamaMessage {
   role: string;
   content: string;
@@ -71,6 +77,70 @@ export class OllamaClient {
 
   public getModel(type: ModelType): string {
     return this.models[type];
+  }
+
+  /**
+   * QuickCheck with context and ignore list
+   * Determines if the bot should respond to a message
+   */
+  public async quickCheck(
+    message: string, 
+    username: string, 
+    recentHistory: string[] = [],
+    ignoredUsers: string[] = []
+  ): Promise<boolean> {
+    
+    // Ignore list - immediate no
+    // Note: ignoredUsers are already stored in lowercase by MemorySystem
+    if (ignoredUsers.includes(username.toLowerCase())) {
+      return false;
+    }
+    
+    // Obvious garbage - immediate no (even from creator!)
+    if (GARBAGE_PATTERNS.test(message.trim())) {
+      return false;
+    }
+    
+    // Direct mention - always yes
+    if (MENTION_PATTERNS.test(message)) {
+      return true;
+    }
+    
+    // For everything else - ask the model WITH CONTEXT
+    // Use all provided history (already limited by caller)
+    const historyContext = recentHistory.length > 0 
+      ? `\nПоследние сообщения в чате:\n${recentHistory.join('\n')}`
+      : '';
+
+    try {
+      const result = await this.query([
+        {
+          role: "system",
+          content: `Ты решаешь, нужно ли боту Петал отвечать. Ответь ТОЛЬКО: YES или NO
+
+ОТВЕЧАТЬ (YES):
+- Прямое обращение к боту
+- Вопрос где бот может помочь
+- Интересная тема для обсуждения
+
+НЕ ОТВЕЧАТЬ (NO):
+- Мусор: "...", "ок", "лол", эмодзи
+- Личный разговор между людьми  
+- Бот уже ответил и добавить нечего
+- Короткие реакции без смысла
+- Сообщение не требует ответа${historyContext}`
+        },
+        {
+          role: "user",
+          content: `Username: ${username}\nMessage: ${message}\n\nБоту отвечать?`
+        }
+      ], 'quick', { temperature: 0.1, num_ctx: 1024 });
+      
+      return result.trim().toUpperCase().startsWith('YES');
+    } catch (error) {
+      console.error('[QuickCheck Error]', error);
+      return false;
+    }
   }
 }
 
