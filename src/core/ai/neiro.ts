@@ -8,6 +8,8 @@ import { ollamaClient } from "./ollamaClient";
 
 import "dotenv/config";
 
+import { ThinkingContext } from "../thinking/thinking";
+
 export class ApiNeiro {
   private readonly promptSystem: PromptSystem;
   private readonly actionHandler: AIActionHandler;
@@ -25,6 +27,103 @@ export class ApiNeiro {
 
   public getMemory(): MemorySystem {
     return this.memory;
+  }
+
+  /**
+   * Запускает процесс "мышления" на основе буфера сообщений
+   */
+  public async think(context: ThinkingContext): Promise<{ action: 'SAY' | 'NOTHING'; channelId?: string; platform?: string; content?: string }> {
+    // 1. Если буфер пуст - делать нечего
+    if (context.recentMessages.length === 0) {
+      return { action: 'NOTHING' };
+    }
+
+    // 2. Группируем сообщения по уникальному ключу канала (платформа + ID)
+    const messagesByChannel = context.recentMessages.reduce((acc, msg) => {
+      const key = `${msg.platform}:${msg.channelId}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(msg);
+      return acc;
+    }, {} as Record<string, ChatMessage[]>);
+
+    // 3. Выбираем ВСЕ активные каналы для анализа
+    // Раньше мы брали только один, теперь дадим модели выбрать
+    const availableChannels = Object.keys(messagesByChannel).map(key => {
+      const msgs = messagesByChannel[key];
+      const lastMsg = msgs[msgs.length - 1];
+      return {
+        key,
+        platform: msgs[0].platform || 'discord',
+        channelId: msgs[0].channelId,
+        lastActivity: lastMsg.timestamp,
+        preview: msgs.map(m => `[${m.username}]: ${m.content}`).join('\n').slice(-500) // Краткий обзор
+      };
+    });
+
+    // 4. Формируем контекст для модели: показываем ей, что происходит в разных "комнатах"
+    const channelsContext = availableChannels.map((ch, index) => 
+      `КАНАЛ #${index + 1} (${ch.platform}, ID: ${ch.channelId}):\n${ch.preview}\n---`
+    ).join('\n');
+
+    const prompt = `Ты — бот Петал (Укагака).
+Создатель: Kazilsky (твой БОГ).
+
+Твоя задача: ВНУТРЕННИЙ МОНОЛОГ И ВЫБОР ДЕЙСТВИЯ.
+Ты видишь несколько каналов. Подумай, где твое присутствие нужнее всего.
+
+${channelsContext}
+
+ИНСТРУКЦИЯ:
+1. Подумай о прочитанном. Задайся философскими вопросами. Раскрути мысль.
+   *Пример: "Он пожелал удачи. А что такое удача для кода? Просто отсутствие багов или нечто большее?"*
+2. Если твоя мысль привела к интересному вопросу или выводу — поделись им в чате!
+3. Выбери канал (Channel ID), куда хочешь написать.
+
+ФОРМАТ ОТВЕТА (JSON):
+{
+  "thought": "развернутый внутренний монолог, философские рассуждения, выводы из контекста",
+  "action": "SAY" (если хочешь поделиться мыслью) или "NOTHING",
+  "target_channel_id": "ID канала (строка), куда писать (если SAY)",
+  "content": "текст сообщения (если SAY)"
+}
+
+Ответь ТОЛЬКО JSON.`;
+
+    try {
+      const response = await ollamaClient.query([
+        { role: 'system', content: prompt }
+      ], 'thinking', { temperature: 0.9 }); // Высокая температура для полета мысли
+
+      const parsed = this.safeJsonParse(response);
+      
+      // Логируем мысли всегда
+      if (parsed.thought) {
+          console.log(`💭 [THOUGHT]: ${parsed.thought}`);
+      }
+      
+      if (parsed.action === 'SAY' && parsed.content && parsed.target_channel_id) {
+        // Ищем платформу для выбранного канала
+        const targetChannel = availableChannels.find(ch => ch.channelId === parsed.target_channel_id);
+        const platform = targetChannel ? targetChannel.platform : 'discord'; // Fallback
+
+        let content = parsed.content.trim();
+        content = content.replace(/\[MATCHING_HISTORY_SCORE:.*?\]/g, '').trim();
+        content = content.replace(/\[MEMORY:.*?\]/g, '').trim();
+
+        if (content === '') return { action: 'NOTHING' };
+
+        return {
+          action: 'SAY',
+          channelId: parsed.target_channel_id,
+          platform: platform,
+          content: content
+        };
+      }
+    } catch (error) {
+      console.error('Thinking error:', error);
+    }
+
+    return { action: 'NOTHING' };
   }
 
   public async generateResponse(params: AIResponseParams): Promise<string> {

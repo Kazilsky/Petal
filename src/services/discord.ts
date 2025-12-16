@@ -117,10 +117,58 @@ export class DiscordBot {
     }
   }
 
+  public async sendMessage(channelId: string, content: string): Promise<void> {
+    try {
+      const channel = await this.client.channels.fetch(channelId);
+      if (channel && (channel.isTextBased())) {
+        // Cast to any because isTextBased doesn't guarantee send method in all typings, but it exists
+        const sentMessage = await (channel as any).send(content);
+        
+        // Add BOT'S OWN message to thinking buffer
+        if (this.thinkingModule && sentMessage) {
+           this.thinkingModule.addMessage({
+            content: content,
+            username: this.client.user?.username || 'Petal',
+            channelId: channelId,
+            channelName: 'Unknown', // Not critical for bot messages
+            timestamp: Date.now(),
+            platform: 'discord',
+            metadata: {
+              userId: this.client.user?.id,
+              isReply: false
+            }
+          });
+        }
+      } else {
+        console.error(`Channel ${channelId} not found or not text-based`);
+      }
+    } catch (error) {
+      console.error(`Error sending message to ${channelId}:`, error);
+    }
+  }
+
   private async sendChunkedResponse(message: Message, text: string): Promise<void> {
     const CHUNK_SIZE = 2000;
     for (let i = 0; i < text.length; i += CHUNK_SIZE) {
-      await message.reply(text.slice(i, i + CHUNK_SIZE));
+      const chunk = text.slice(i, i + CHUNK_SIZE);
+      const sentMessage = await message.reply(chunk);
+      
+      // Add BOT'S OWN message to thinking buffer
+      if (this.thinkingModule) {
+         this.thinkingModule.addMessage({
+          content: chunk,
+          username: this.client.user?.username || 'Petal',
+          channelId: message.channelId,
+          channelName: 'Unknown',
+          timestamp: Date.now(),
+          platform: 'discord',
+          metadata: {
+            userId: this.client.user?.id,
+            isReply: true,
+            replyToMessageId: message.id
+          }
+        });
+      }
     }
   }
 }

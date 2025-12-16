@@ -1,5 +1,5 @@
 import { DiscordBot } from './services/discord';
-//import { TelegramService } from './services/telegram';
+import { TelegramService } from './services/telegram';
 import { HTTPServer } from './services/server';
 import { ThinkingModule } from './core/thinking/thinking';
 import { SystemControl } from './core/system/systemControl';
@@ -12,6 +12,11 @@ const logger = new Logger();
 const systemControl = new SystemControl(logger);
 const thinkingModule = new ThinkingModule(logger);
 
+// Initialize services
+const discordBot = new DiscordBot();
+const telegramService = new TelegramService();
+const httpServer = new HTTPServer();
+
 // Set up thinking callback
 thinkingModule.setThinkingCallback(async (context: ThinkingContext) => {
   try {
@@ -21,16 +26,25 @@ thinkingModule.setThinkingCallback(async (context: ThinkingContext) => {
       return;
     }
 
-    // Build a summary of recent activity
-    const summary = context.recentMessages
-      .slice(-5)
-      .map(msg => `[${msg.username}]: ${msg.content}`)
-      .join('\n');
-
-    logger.log('info', `Thinking cycle: ${context.recentMessages.length} messages in buffer`);
+    logger.log('info', `Thinking cycle: ${context.recentMessages.length} messages in buffer. Analyzing...`);
     
-    // In a full implementation, could send this to AI for processing
-    // For now, just log the activity
+    // Call the AI to think
+    const result = await ai.think(context);
+
+    if (result.action === 'SAY' && result.channelId && result.content) {
+      logger.log('info', `🧠 Thought Result: Decided to say "${result.content}" in ${result.channelId} (${result.platform})`);
+      
+      // Dispatch to correct platform
+      if (result.platform === 'telegram') {
+        await telegramService.sendMessage(result.channelId, result.content);
+      } else {
+        // Default to Discord
+        await discordBot.sendMessage(result.channelId, result.content);
+      }
+    } else {
+      logger.log('debug', '🧠 Thought Result: Decided to stay silent');
+    }
+
   } catch (error) {
     logger.log('error', `Thinking callback error: ${error}`);
   }
@@ -43,17 +57,12 @@ if (actionHandler) {
   actionHandler.setThinkingModule(thinkingModule);
 }
 
-// Initialize services
-const discordBot = new DiscordBot();
-//const telegramService = new TelegramService();
-const httpServer = new HTTPServer();
-
 // Inject dependencies into services
 discordBot.setThinkingModule(thinkingModule);
 discordBot.setSystemControl(systemControl);
 
-//telegramService.setThinkingModule(thinkingModule);
-//telegramService.setSystemControl(systemControl);
+telegramService.setThinkingModule(thinkingModule);
+telegramService.setSystemControl(systemControl);
 
 httpServer.setThinkingModule(thinkingModule);
 httpServer.setSystemControl(systemControl);
@@ -71,7 +80,7 @@ async function startServices() {
     await discordBot.start();
 
     // Start Telegram bot
-    //await telegramService.start();
+    await telegramService.start();
 
     // Start HTTP server
     await httpServer.start();
