@@ -2,6 +2,12 @@ import "dotenv/config";
 
 export type ModelType = 'main' | 'thinking' | 'quick';
 
+// Garbage message patterns that should be immediately rejected
+const GARBAGE_PATTERNS = /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i;
+
+// Bot mention patterns
+const MENTION_PATTERNS = /петал|petal|бот/i;
+
 export interface OllamaMessage {
   role: string;
   content: string;
@@ -85,25 +91,25 @@ export class OllamaClient {
   ): Promise<boolean> {
     
     // Ignore list - immediate no
-    if (ignoredUsers.some(u => u.toLowerCase() === username.toLowerCase())) {
+    // Note: ignoredUsers are already stored in lowercase by MemorySystem
+    if (ignoredUsers.includes(username.toLowerCase())) {
       return false;
     }
     
     // Obvious garbage - immediate no (even from creator!)
-    const isGarbage = /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i.test(message.trim());
-    if (isGarbage) {
+    if (GARBAGE_PATTERNS.test(message.trim())) {
       return false;
     }
     
     // Direct mention - always yes
-    const mentionsPetal = /петал|petal|бот/i.test(message);
-    if (mentionsPetal) {
+    if (MENTION_PATTERNS.test(message)) {
       return true;
     }
     
     // For everything else - ask the model WITH CONTEXT
+    // Use all provided history (already limited by caller)
     const historyContext = recentHistory.length > 0 
-      ? `\nПоследние сообщения в чате:\n${recentHistory.slice(-5).join('\n')}`
+      ? `\nПоследние сообщения в чате:\n${recentHistory.join('\n')}`
       : '';
 
     try {

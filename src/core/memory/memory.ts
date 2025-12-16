@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 import { MemoryMessage, PermanentMemory } from "../ai.types";
 
+// Bot name for message formatting
+const BOT_NAME = 'Petal';
+
 // Интерфейс для структуры факта
 interface MemoryFact {
   content: string;
@@ -226,7 +229,7 @@ export class MemorySystem {
         if (msg.role === 'user') {
           return `[${msg.username || 'User'}]: ${msg.content}`;
         } else {
-          return `[Petal]: ${msg.content}`;
+          return `[${BOT_NAME}]: ${msg.content}`;
         }
       });
   }
