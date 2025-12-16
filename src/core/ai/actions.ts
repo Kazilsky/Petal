@@ -30,6 +30,12 @@ export class AIActionHandler {
       case "noteUnset":
         return this.handleNoteUnset(params);
       
+      // Ignore list management
+      case "ignoreUser":
+        return this.handleIgnoreUser(params);
+      case "unignoreUser":
+        return this.handleUnignoreUser(params);
+      
       // Thinking module controls
       case "thinking.enable":
         return this.handleThinkingEnable(params);
@@ -99,6 +105,18 @@ export class AIActionHandler {
   private handleNoteUnset(params: { name: string }): { success: boolean } {
     this.memory.unsetNote(params.name);
     console.log(`[AI NOTE.UNSET] ${params.name} - Note removed`);
+    return { success: true };
+  }
+
+  private handleIgnoreUser(params: { username: string }): { success: boolean } {
+    this.memory.ignoreUser(params.username);
+    console.log(`[AI IGNORE] Добавлен в игнор: ${params.username}`);
+    return { success: true };
+  }
+
+  private handleUnignoreUser(params: { username: string }): { success: boolean } {
+    this.memory.unignoreUser(params.username);
+    console.log(`[AI UNIGNORE] Убран из игнора: ${params.username}`);
     return { success: true };
   }
 

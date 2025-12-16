@@ -72,6 +72,70 @@ export class OllamaClient {
   public getModel(type: ModelType): string {
     return this.models[type];
   }
+
+  /**
+   * QuickCheck with context and ignore list
+   * Determines if the bot should respond to a message
+   */
+  public async quickCheck(
+    message: string, 
+    username: string, 
+    recentHistory: string[] = [],
+    ignoredUsers: string[] = []
+  ): Promise<boolean> {
+    
+    // Ignore list - immediate no
+    if (ignoredUsers.some(u => u.toLowerCase() === username.toLowerCase())) {
+      return false;
+    }
+    
+    // Obvious garbage - immediate no (even from creator!)
+    const isGarbage = /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i.test(message.trim());
+    if (isGarbage) {
+      return false;
+    }
+    
+    // Direct mention - always yes
+    const mentionsPetal = /петал|petal|бот/i.test(message);
+    if (mentionsPetal) {
+      return true;
+    }
+    
+    // For everything else - ask the model WITH CONTEXT
+    const historyContext = recentHistory.length > 0 
+      ? `\nПоследние сообщения в чате:\n${recentHistory.slice(-5).join('\n')}`
+      : '';
+
+    try {
+      const result = await this.query([
+        {
+          role: "system",
+          content: `Ты решаешь, нужно ли боту Петал отвечать. Ответь ТОЛЬКО: YES или NO
+
+ОТВЕЧАТЬ (YES):
+- Прямое обращение к боту
+- Вопрос где бот может помочь
+- Интересная тема для обсуждения
+
+НЕ ОТВЕЧАТЬ (NO):
+- Мусор: "...", "ок", "лол", эмодзи
+- Личный разговор между людьми  
+- Бот уже ответил и добавить нечего
+- Короткие реакции без смысла
+- Сообщение не требует ответа${historyContext}`
+        },
+        {
+          role: "user",
+          content: `Username: ${username}\nMessage: ${message}\n\nБоту отвечать?`
+        }
+      ], 'quick', { temperature: 0.1, num_ctx: 1024 });
+      
+      return result.trim().toUpperCase().startsWith('YES');
+    } catch (error) {
+      console.error('[QuickCheck Error]', error);
+      return false;
+    }
+  }
 }
 
 export const ollamaClient = new OllamaClient();

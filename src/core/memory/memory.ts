@@ -18,6 +18,7 @@ export class MemorySystem {
   private tempMemory: MemoryMessage[] = [];
   private permMemory: ExtendedPermanentMemory;
   private additionalNote: Record<string, string> = {};
+  private ignoredUsers: Set<string> = new Set();
   private readonly MEMORY_FILE = path.resolve("./perm_memory.json");
 
   constructor() {
@@ -191,5 +192,42 @@ export class MemorySystem {
       this.MEMORY_FILE,
       JSON.stringify(this.permMemory, null, 2),
     );
+  }
+
+  /**
+   * Add user to ignore list
+   */
+  public ignoreUser(username: string): void {
+    this.ignoredUsers.add(username.toLowerCase());
+  }
+
+  /**
+   * Remove user from ignore list
+   */
+  public unignoreUser(username: string): void {
+    this.ignoredUsers.delete(username.toLowerCase());
+  }
+
+  /**
+   * Get list of ignored users
+   */
+  public getIgnoredUsers(): string[] {
+    return Array.from(this.ignoredUsers);
+  }
+
+  /**
+   * Get recent messages for QuickCheck context
+   */
+  public getRecentMessages(count: number = 5): string[] {
+    return this.tempMemory
+      .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+      .slice(-count)
+      .map(msg => {
+        if (msg.role === 'user') {
+          return `[${msg.username || 'User'}]: ${msg.content}`;
+        } else {
+          return `[Petal]: ${msg.content}`;
+        }
+      });
   }
 }
