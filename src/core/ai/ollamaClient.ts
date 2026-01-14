@@ -1,78 +1,96 @@
 import "dotenv/config";
 
-export type ModelType = 'main' | 'thinking' | 'quick';
+export type ModelType = "main" | "thinking" | "quick";
 
 // Garbage message patterns that should be immediately rejected
-const GARBAGE_PATTERNS = /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i;
+const GARBAGE_PATTERNS =
+  /^[.\s…]+$|^(лол|ахах|хах|имба|\+1|1|ок|окей|да|нет|гг|gg|\.{2,})$/i;
 
 // Bot mention patterns
 const MENTION_PATTERNS = /петал|petal|бот/i;
 
-export interface OllamaMessage {
-  role: string;
+export interface ChatMessage {
+  role: "system" | "user" | "assistant";
   content: string;
   username?: string;
 }
 
-export class OllamaClient {
+export class OpenRouterClient {
   private readonly baseUrl: string;
-  private readonly token: string;
+  private readonly apiKey: string;
   private readonly models: Record<ModelType, string>;
+  private readonly siteUrl: string;
+  private readonly siteName: string;
 
   constructor() {
-    this.baseUrl = process.env.OLLAMA_URL || "http://localhost:11434";
-    this.token = process.env.OLLAMA_TOKEN || "";
+    this.baseUrl = process.env.OPENROUTER_URL || "https://openrouter.ai/api/v1";
+    this.apiKey = process.env.OPENROUTER_API_KEY || "";
+    this.siteUrl = process.env.SITE_URL || "http://localhost";
+    this.siteName = process.env.SITE_NAME || "Petal Bot";
+
     this.models = {
-      main: process.env.OLLAMA_MODEL || "qwen2.5:14b",
-      thinking: process.env.OLLAMA_THINKING_MODEL || process.env.OLLAMA_MODEL || "qwen2.5:14b",
-      quick: process.env.OLLAMA_QUICK_MODEL || process.env.OLLAMA_MODEL || "qwen2.5:14b"
+      main: process.env.OPENROUTER_MODEL || "mistralai/devstral-2512:free",
+      thinking:
+        process.env.OPENROUTER_THINKING_MODEL ||
+        process.env.OPENROUTER_MODEL ||
+        "mistralai/devstral-2512:free",
+      quick:
+        process.env.OPENROUTER_QUICK_MODEL || "mistralai/devstral-2512:free",
     };
   }
 
-  public async query(
-    messages: OllamaMessage[], 
-    modelType: ModelType = 'main',
-    options?: { temperature?: number; num_ctx?: number }
+    public async query(
+    messages: ChatMessage[],
+    modelType: ModelType = "main",
+    options?: { temperature?: number; max_tokens?: number },
   ): Promise<string> {
+    if (!this.apiKey) {
+      throw new Error("OPENROUTER_API_KEY is not set");
+    }
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${this.apiKey}`,
+      "HTTP-Referer": this.siteUrl,
+      "X-Title": this.siteName,
     };
-    
-    // Only add Authorization header if token is provided
-    if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
-    }
 
-    const response = await fetch(
-      `${this.baseUrl}/api/chat`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: this.models[modelType],
-          messages,
-          stream: false,
-          options: {
-            temperature: options?.temperature ?? 0.6,
-            num_ctx: options?.num_ctx ?? 8192,
-          }
-        }),
-      },
-    );
+    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: this.models[modelType],
+        messages: messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+        temperature: options?.temperature ?? 0.6,
+        max_tokens: options?.max_tokens ?? 4096,
+      }),
+    });
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => '');
-      throw new Error(`Ollama API Error: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
+      const errorText = await response.text().catch(() => "");
+      throw new Error(
+        `OpenRouter API Error: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ""}`,
+      );
     }
-    
+
     const data = await response.json();
-    
-    // Validate response structure
-    if (!data || !data.message || typeof data.message.content !== 'string') {
-      throw new Error(`Invalid Ollama API response structure: ${JSON.stringify(data)}`);
+
+    // Validate response structure (OpenAI-compatible format)
+    if (
+      !data ||
+      !data.choices ||
+      !data.choices[0] ||
+      !data.choices[0].message
+    ) {
+      throw new Error(
+        `Invalid OpenRouter API response structure: ${JSON.stringify(data)}`,
+      );
     }
-    
-    return data.message.content;
+
+    return data.choices[0].message.content;
   }
 
   public getModel(type: ModelType): string {
@@ -84,24 +102,22 @@ export class OllamaClient {
    * Determines if the bot should respond to a message
    */
   public async quickCheck(
-    message: string, 
-    username: string, 
+    message: string,
+    username: string,
     recentHistory: string[] = [],
-    ignoredUsers: string[] = []
+    ignoredUsers: string[] = [],
   ): Promise<boolean> {
-    
     // Ignore list - immediate no
-    // Note: ignoredUsers are already stored in lowercase by MemorySystem
     if (ignoredUsers.includes(username.toLowerCase())) {
       return false;
     }
-    
-    // Obvious garbage - immediate no (even from creator!)
+
+    // Obvious garbage - immediate no
     if (GARBAGE_PATTERNS.test(message.trim())) {
       return false;
     }
-    
-    // Если сообщение слишком короткое и содержит только спецсимволы или смайлы
+
+    // Too short with only special chars
     if (/^[.,!?;:\s]+$/.test(message.trim())) {
       return false;
     }
@@ -110,18 +126,19 @@ export class OllamaClient {
     if (MENTION_PATTERNS.test(message)) {
       return true;
     }
-    
+
     // For everything else - ask the model WITH CONTEXT
-    // Use all provided history (already limited by caller)
-    const historyContext = recentHistory.length > 0 
-      ? `\n## 📜 ИСТОРИЯ ЧАТА (последние сообщения):\n${recentHistory.join('\n')}\n`
-      : '\n## 📜 ИСТОРИЯ ЧАТА: (нет данных)\n';
+    const historyContext =
+      recentHistory.length > 0
+        ? `\n## 📜 ИСТОРИЯ ЧАТА (последние сообщения):\n${recentHistory.join("\n")}\n`
+        : "\n## 📜 ИСТОРИЯ ЧАТА: (нет данных)\n";
 
     try {
-      const result = await this.query([
-        {
-          role: "system",
-          content: `Ты — умный фильтр для чат-бота "Петал". 
+      const result = await this.query(
+        [
+          {
+            role: "system",
+            content: `Ты — умный фильтр для чат-бота "Петал".
 Твоя задача: проанализировать последнее сообщение и историю чата, чтобы решить — стоит ли боту отвечать.
 
 ${historyContext}
@@ -143,20 +160,23 @@ ${historyContext}
 4.  **Завершенность:** Бот уже дал ответ, и пользователь просто подтвердил получение ("понял", "спасибо").
 5.  **Неуверенность:** Если не очевидно, что обращаются к боту — лучше промолчи.
 
-Твой ответ (YES/NO):`
-        },
-        {
-          role: "user",
-          content: `Username: ${username}\nMessage: ${message}\n\nБоту отвечать?`
-        }
-      ], 'quick', { temperature: 0.1, num_ctx: 2048 });
-      
-      return result.trim().toUpperCase().startsWith('YES');
+Твой ответ (YES/NO):`,
+          },
+          {
+            role: "user",
+            content: `Username: ${username}\nMessage: ${message}\n\nБоту отвечать?`,
+          },
+        ],
+        "quick",
+        { temperature: 0.1, max_tokens: 10 },
+      );
+
+      return result.trim().toUpperCase().startsWith("YES");
     } catch (error) {
-      console.error('[QuickCheck Error]', error);
+      console.error("[QuickCheck Error]", error);
       return false;
     }
   }
 }
 
-export const ollamaClient = new OllamaClient();
+export const openRouterClient = new OpenRouterClient();

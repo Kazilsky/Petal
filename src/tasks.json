@@ -1,0 +1,135 @@
+[
+  [
+    "task_1768362534316_kd5dr3",
+    {
+      "id": "task_1768362534316_kd5dr3",
+      "type": "relay_message",
+      "status": "cancelled",
+      "priority": "normal",
+      "source": {
+        "platform": "discord",
+        "channelId": "1442982555795198168",
+        "channelName": "general",
+        "messageId": "unknown",
+        "username": "_kazilsky"
+      },
+      "target": {
+        "platform": "telegram",
+        "username": "_kazilsky"
+      },
+      "title": "Тестовое сообщение в Telegram",
+      "description": "Отправить тестовое сообщение пользователю _kazilsky в Telegram",
+      "originalQuestion": "Напиши мне что-то для теста в телеграм",
+      "followUps": [],
+      "replies": [],
+      "metadata": {
+        "messageText": "Привет! Это тестовое сообщение от Петал. 🌸 Всё работает!",
+        "cancelReason": "Задача устарела, удалена по запросу создателя"
+      },
+      "createdAt": 1768362534316,
+      "lastActivityAt": 1768363034848,
+      "expiresAt": 1768448934316
+    }
+  ],
+  [
+    "task_1768363072088_4i6t29",
+    {
+      "id": "task_1768363072088_4i6t29",
+      "type": "relay_message",
+      "status": "cancelled",
+      "priority": "normal",
+      "source": {
+        "platform": "discord",
+        "channelId": "1442982555795198168",
+        "channelName": "general",
+        "messageId": "789",
+        "username": "_kazilsky"
+      },
+      "target": {
+        "platform": "telegram",
+        "username": "_kazilsky"
+      },
+      "title": "Написать сообщение в Telegram",
+      "description": "Отправить сообщение создателю в Telegram",
+      "originalQuestion": "Петал напиши мне в телеграм",
+      "followUps": [],
+      "replies": [],
+      "metadata": {
+        "messageText": "Создатель, вы попросили написать вам в Telegram. 🌸",
+        "cancelReason": "Не знаю ID для telegram/@_kazilsky. Скажи мне ID через команду или используй [AI_ACTION:user.save]"
+      },
+      "createdAt": 1768363072088,
+      "lastActivityAt": 1768363072103,
+      "expiresAt": 1768449472088
+    }
+  ],
+  [
+    "task_1768363195958_ogrw5k",
+    {
+      "id": "task_1768363195958_ogrw5k",
+      "type": "relay_message",
+      "status": "completed",
+      "priority": "high",
+      "source": {
+        "platform": "discord",
+        "channelId": "1442982555795198168",
+        "channelName": "general",
+        "messageId": "1028437886",
+        "username": "_kazilsky"
+      },
+      "target": {
+        "platform": "telegram",
+        "userId": "1028437886",
+        "username": "_kazilsky"
+      },
+      "title": "Написать создателю в Telegram",
+      "description": "Написать сообщение создателю в Telegram",
+      "originalQuestion": "Напиши мне в телеграм",
+      "followUps": [],
+      "replies": [
+        {
+          "from": "system",
+          "content": "Message sent",
+          "timestamp": 1768363196143,
+          "platform": "discord"
+        }
+      ],
+      "metadata": {
+        "messageText": "Создатель, я здесь. 🌸"
+      },
+      "createdAt": 1768363195958,
+      "lastActivityAt": 1768363196143,
+      "expiresAt": 1768449595958
+    }
+  ],
+  [
+    "task_1768363301471_ih4qni",
+    {
+      "id": "task_1768363301471_ih4qni",
+      "type": "relay_message",
+      "status": "cancelled",
+      "priority": "normal",
+      "source": {
+        "platform": "telegram",
+        "channelId": "1028437886",
+        "username": "Kazilsky"
+      },
+      "target": {
+        "platform": "discord",
+        "channelId": "1028437886"
+      },
+      "title": "Отправить сообщение в Discord",
+      "description": "Отправить сообщение от имени создателя в Discord",
+      "originalQuestion": "Напиши в Discord что-то",
+      "followUps": [],
+      "replies": [],
+      "metadata": {
+        "message": "Привет, это сообщение от Петал! 🌸",
+        "cancelReason": "router.send вернул false (возможно, платформа не подключена)"
+      },
+      "createdAt": 1768363301471,
+      "lastActivityAt": 1768363302922,
+      "expiresAt": 1768449701471
+    }
+  ]
+]
